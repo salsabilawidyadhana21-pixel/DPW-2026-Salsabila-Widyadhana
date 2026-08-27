@@ -1,5 +1,45 @@
 # Dokumentasi Jobsheet 2 — CSS3 Styling Dasar
 
+# 1. Apa itu CSS
+CSS (Cascading Style Sheets) adalah bahasa yang digunakan untuk mengatur tampilan halaman web yang dibuat dengan HTML.
+
+Kalau HTML digunakan untuk membuat struktur, CSS digunakan untuk membuat tampilannya.
+
+Contohnya:
+```
+<h1>SIMUS Mini</h1>
+```
+Tanpa CSS, tampilannya masih sederhana.
+
+Dengan CSS:
+```
+h1 {
+    color: blue;
+    text-align: center;
+}
+```
+Maka judul akan berwarna biru dan berada di tengah.
+
+CSS bisa digunakan untuk mengatur:
+
+- warna
+- ukuran dan jenis tulisan
+- jarak
+- background
+- border
+- posisi elemen
+- tabel
+- tombol
+- layout menggunakan Flexbox dan Grid
+
+Jadi gampangnya:
+
+HTML = struktur website
+
+CSS = tampilan website
+
+JavaScript = fungsi/interaksi website
+
 # 2. Penjelasan index.html
 
 index.html merupakan halaman utama aplikasi SIMUS Mini. Pada Jobsheet 2, halaman ini mulai diberikan styling menggunakan CSS agar tampil lebih rapi.
