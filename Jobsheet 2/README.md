@@ -1,5 +1,11 @@
 # Dokumentasi Jobsheet 2 — CSS3 Styling Dasar
 
+# Apa yang Baru di Jobsheet 2?
+
+Pada Jobsheet 2, project SIMUS Mini mulai diberikan styling menggunakan CSS3. Struktur HTML dari Jobsheet 1 tidak diubah secara keseluruhan, tetapi setiap halaman dihubungkan dengan file:
+
+assets/css/style.css
+
 # 1. Apa itu CSS
 CSS (Cascading Style Sheets) adalah bahasa yang digunakan untuk mengatur tampilan halaman web yang dibuat dengan HTML.
 
