@@ -58,7 +58,7 @@ simus-mini
 
 Kemudian dibuat struktur folder sebagai berikut:
 
-<img width="84" height="103" alt="image" src="https://github.com/user-attachments/assets/3cc869ce-b5ae-49c6-b02f-65c46d883ca7" />
+<img width="213" height="88" alt="image" src="https://github.com/user-attachments/assets/a5b85bf2-15a1-409e-96f1-84b86927e2de" />
 
 ### 2. Membuat Halaman Beranda
 
