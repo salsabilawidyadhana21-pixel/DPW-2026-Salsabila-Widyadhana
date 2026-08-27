@@ -121,3 +121,32 @@ Digunakan untuk menentukan judul halaman yang muncul pada tab browser.
 ```
 Berisi seluruh konten yang akan ditampilkan kepada pengguna.
 
+# Jobsheet 1 menghasilkan project SIMUS Mini yang terdiri dari lima halaman:
+
+index.html
+→ Halaman Beranda
+
+buku/list.html
+→ Daftar Buku
+
+buku/tambah.html
+→ Form Tambah Buku
+
+anggota/list.html
+→ Daftar Anggota
+
+anggota/tambah.html
+→ Form Tambah Anggota
+
+Materi utama yang diterapkan adalah HTML5 semantic, navigasi antarhalaman, tabel, dan form.
+
+HTML5 semantic yang digunakan yaitu:
+```
+<header>
+<nav>
+<main>
+<section>
+<article>
+<footer>
+```
+Project ini masih berupa struktur dasar sehingga data belum diproses menggunakan database. Struktur yang dibuat akan menjadi dasar untuk pengembangan tampilan menggunakan CSS pada Jobsheet berikutnya.
