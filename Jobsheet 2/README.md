@@ -113,3 +113,20 @@ CSS digunakan untuk memberikan tampilan yang lebih menarik pada tabel, form, dan
 Tabel memiliki zebra stripe dan efek hover, sedangkan form memiliki border, padding, dan efek focus pada input.
 
 Tombol juga diberikan warna dan efek hover.
+
+# Struktur Kode 
+```
+jobsheet-02/
+├── index.html
+├── assets/
+│   └── css/
+│       └── style.css      # File baru di jobsheet ini
+├── buku/
+│   ├── list.html
+│   └── tambah.html
+├── anggota/
+│   ├── list.html
+│   └── tambah.html
+├── README.md
+└── dokumentasi/           # Folder dokumentasi ini
+```
