@@ -150,3 +150,21 @@ HTML5 semantic yang digunakan yaitu:
 <footer>
 ```
 Project ini masih berupa struktur dasar sehingga data belum diproses menggunakan database. Struktur yang dibuat akan menjadi dasar untuk pengembangan tampilan menggunakan CSS pada Jobsheet berikutnya.
+
+# Berikut jawaban Latihan Reflektif 6.5:
+
+1. Kenapa field Alamat dan No. HP diberi required, sedangkan Nama dan No. Anggota tidak?
+
+Field Alamat dan No. HP diberi atribut required agar pengguna wajib mengisi data tersebut sebelum form dapat dikirim. Sedangkan Nama dan No. Anggota tidak diberi required, sehingga pengguna masih dapat mengosongkannya.
+
+Namun, dalam penggunaan sebenarnya, Nama dan No. Anggota sebaiknya juga diberi required, karena keduanya merupakan data penting untuk identitas anggota.
+
+2. Apa yang akan terjadi jika browser menampilkan Submit pada tombol Simpan tetapi Nama dan No. Anggota kosong?
+
+Karena Nama dan No. Anggota tidak memiliki atribut required, browser tetap mengizinkan form untuk dikirim meskipun kedua field tersebut kosong.
+
+Browser hanya akan memberikan peringatan untuk field yang memiliki required, seperti Alamat dan No. HP, apabila field tersebut belum diisi.
+
+3. Form ini juga belum punya action pada tag <form>—apa dampaknya saat tombol Simpan ditekan?
+
+Jika tag <form> tidak memiliki atribut action, data form akan dikirim ke URL halaman saat ini secara default. Karena belum ada program backend yang memproses data tersebut, data yang dikirim belum tersimpan ke database atau diproses secara nyata.
