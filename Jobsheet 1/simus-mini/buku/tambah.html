@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMUS Mini - Tambah Buku</title>
+</head>
+
+<body>
+
+    <header>
+        <h1>SIMUS Mini</h1>
+
+        <nav>
+            <a href="../index.html">Beranda</a> |
+            <a href="list.html">Daftar Buku</a> |
+            <a href="tambah.html">Tambah Buku</a> |
+            <a href="../anggota/list.html">Daftar Anggota</a> |
+            <a href="../anggota/tambah.html">Tambah Anggota</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <section>
+            <h2>Form Tambah Buku</h2>
+
+            <form action="#" method="post">
+
+                <p>
+                    <label for="judul">Judul Buku</label>
+                    <br>
+                    <input
+                        type="text"
+                        id="judul"
+                        name="judul"
+                        required
+                    >
+                </p>
+
+                <p>
+                    <label for="pengarang">Pengarang</label>
+                    <br>
+                    <input
+                        type="text"
+                        id="pengarang"
+                        name="pengarang"
+                        required
+                    >
+                </p>
+
+                <p>
+                    <label for="tahun">Tahun</label>
+                    <br>
+                    <input
+                        type="number"
+                        id="tahun"
+                        name="tahun"
+                        required
+                    >
+                </p>
+
+                <p>
+                    <label for="isbn">ISBN</label>
+                    <br>
+                    <input
+                        type="text"
+                        id="isbn"
+                        name="isbn"
+                        required
+                    >
+                </p>
+
+                <p>
+                    <label for="stok">Stok</label>
+                    <br>
+                    <input
+                        type="number"
+                        id="stok"
+                        name="stok"
+                        required
+                    >
+                </p>
+
+                <p>
+                    <label for="kategori">Kategori</label>
+                    <br>
+                    <select id="kategori" name="kategori" required>
+                        <option value="">-- Pilih Kategori --</option>
+                        <option value="teknologi">Teknologi</option>
+                        <option value="pendidikan">Pendidikan</option>
+                        <option value="novel">Novel</option>
+                        <option value="sains">Sains</option>
+                    </select>
+                </p>
+
+                <button type="submit">Simpan Buku</button>
+                <button type="reset">Reset</button>
+
+            </form>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 SIMUS Mini</p>
+    </footer>
+
+</body>
+</html>
