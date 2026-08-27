@@ -2,16 +2,6 @@
 
 Dokumentasi ini dibuat untuk menjelaskan project SIMUS Mini pada Jobsheet 1. Setiap file HTML dijelaskan berdasarkan fungsi halaman, struktur yang digunakan, serta kegunaan elemen HTML5 semantic dalam pembuatan website sederhana.
 
-# Daftar Isi
-
-1. Konsep Dasar yang Dipakai di Jobsheet Ini
-2. Penjelasan index.html (Halaman Beranda)
-3. Penjelasan buku/list.html (Daftar Buku)
-4. Penjelasan buku/tambah.html (Form Tambah Buku)
-5. Penjelasan anggota/list.html (Daftar Anggota)
-6. Penjelasan anggota/tambah.html (Form Tambah Anggota)
-7. Rangkuman
-
 # Tentang Program Ini
 
 Jobsheet 1 membangun kerangka awal aplikasi SIMUS Mini, yaitu sistem informasi perpustakaan sederhana yang digunakan untuk menampilkan dan mengelola data buku serta anggota.
