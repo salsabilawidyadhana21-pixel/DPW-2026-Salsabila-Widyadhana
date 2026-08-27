@@ -20,10 +20,29 @@ Pada tahap Jobsheet 1, website masih menggunakan HTML saja. Data yang ditampilka
 
 Struktur HTML yang digunakan pada project ini menggunakan beberapa tag HTML5 semantic, yaitu:
 
-- <header> digunakan sebagai bagian kepala halaman.
-- <nav> digunakan untuk membuat menu navigasi.
-- <main> digunakan sebagai bagian konten utama.
-- <section> digunakan untuk membagi konten berdasarkan bagian tertentu.
-- <article> digunakan untuk menampilkan informasi yang berdiri sendiri.
-- <footer> digunakan sebagai bagian bawah halaman.
-- <div> belum digunakan sebagai struktur utama karena Jobsheet 1 berfokus pada penggunaan semantic HTML.
+- header digunakan sebagai bagian kepala halaman.
+- nav digunakan untuk membuat menu navigasi.
+- main digunakan sebagai bagian konten utama.
+- section digunakan untuk membagi konten berdasarkan bagian tertentu.
+- article digunakan untuk menampilkan informasi yang berdiri sendiri.
+- footer digunakan sebagai bagian bawah halaman.
+- div belum digunakan sebagai struktur utama karena Jobsheet 1 berfokus pada penggunaan semantic HTML.
+
+Selain itu, digunakan juga atribut id dan name pada form. Penamaan atribut tersebut dibuat konsisten agar lebih mudah digunakan pada tahap pengembangan berikutnya.
+
+# Struktur Folder
+
+'''
+Struktur Folder
+simus-mini/
+│
+├── index.html
+│
+├── buku/
+│   ├── list.html
+│   └── tambah.html
+│
+└── anggota/
+    ├── list.html
+    └── tambah.html
+  '''
