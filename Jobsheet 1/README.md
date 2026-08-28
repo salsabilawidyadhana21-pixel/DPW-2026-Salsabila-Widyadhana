@@ -23,7 +23,6 @@ Selain itu, digunakan juga atribut id dan name pada form. Penamaan atribut terse
 # Struktur Folder
 
 ```
-Struktur Folder
 simus-mini/
 │
 ├── index.html
