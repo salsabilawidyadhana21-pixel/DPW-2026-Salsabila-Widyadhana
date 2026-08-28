@@ -122,17 +122,19 @@ Tombol juga diberikan warna dan efek hover.
 
 # Struktur Kode 
 ```
-jobsheet-02/
+simus-mini/
+│
 ├── index.html
+│
 ├── assets/
 │   └── css/
-│       └── style.css      # File baru di jobsheet ini
+│       └── style.css
+│
 ├── buku/
 │   ├── list.html
 │   └── tambah.html
-├── anggota/
-│   ├── list.html
-│   └── tambah.html
-├── README.md
-└── dokumentasi/           # Folder dokumentasi ini
+│
+└── anggota/
+    ├── list.html
+    └── tambah.html
 ```
