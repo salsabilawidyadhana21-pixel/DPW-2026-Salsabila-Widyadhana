@@ -38,6 +38,7 @@ Berdasarkan hasil perancangan UI/UX, berikut adalah detail wireframe untuk setia
 - Layout: Halaman pencarian dan pelacakan arsip sirkulasi.
 - Komponen: Kolom pencarian cepat transaksi aktif untuk proses pengembalian, serta tabel rekapitulasi riwayat transaksi lengkap dengan status keterlambatan dan tombol ekspor data.
 
+## Struktur Folder
 ```
 jobsheet-04/
 ├── index.html              # Sama persis dengan jobsheet-03
