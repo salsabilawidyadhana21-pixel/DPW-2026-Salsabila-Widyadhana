@@ -4,7 +4,7 @@ Dokumentasi ini menjelaskan secara rinci struktur, komponen, serta implementasi 
 
 ---
 
-## 📂 Daftar Halaman & Navigasi
+## Daftar Halaman & Navigasi
 Proyek ini memiliki struktur halaman multi-halaman (*multi-page website*) dengan pembagian direktori sebagai berikut:
 1. **Beranda (`index.html`)**
    * Berfungsi sebagai halaman utama/dashboard sistem.
@@ -20,7 +20,7 @@ Proyek ini memiliki struktur halaman multi-halaman (*multi-page website*) dengan
 
 ---
 
-## 📱 Implementasi Desain Responsif (Jobsheet 3)
+## Implementasi Desain Responsif (Jobsheet 3)
 
 Seluruh aturan tampilan responsif dikontrol melalui file `assets/css/style.css` menggunakan teknik *CSS Media Queries*, *Flexbox*, dan *CSS Grid*.
 
