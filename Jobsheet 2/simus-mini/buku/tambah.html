@@ -5,24 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Tambah Buku - SIMUS Mini</title>
+    <title>Tambah Buku</title>
 
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 
 <body>
 
-    <!-- Header dan Navbar -->
     <header>
         <div class="navbar">
 
             <div class="logo">
                 <h1>SIMUS Mini</h1>
             </div>
-
-            <!-- Jobsheet 3: Hamburger Menu -->
-            <input type="checkbox" id="menu-toggle" class="menu-toggle">
-            <label for="menu-toggle" class="hamburger">☰</label>
 
             <nav>
                 <a href="../index.html">Beranda</a>
@@ -35,37 +30,52 @@
         </div>
     </header>
 
-
     <main>
 
         <section>
 
-            <h2>Tambah Buku</h2>
+            <h2>Form Tambah Buku</h2>
 
-            <!-- Jobsheet 3: Form dibuat responsive -->
             <form>
 
                 <div class="form-group">
                     <label for="judul">Judul Buku</label>
-                    <input type="text" id="judul" name="judul" placeholder="Masukkan judul buku">
+                    <input type="text" id="judul" name="judul">
                 </div>
 
                 <div class="form-group">
-                    <label for="penulis">Penulis</label>
-                    <input type="text" id="penulis" name="penulis" placeholder="Masukkan nama penulis">
+                    <label for="pengarang">Pengarang</label>
+                    <input type="text" id="pengarang" name="pengarang">
                 </div>
 
                 <div class="form-group">
-                    <label for="tahun">Tahun Terbit</label>
-                    <input type="number" id="tahun" name="tahun" placeholder="Masukkan tahun terbit">
+                    <label for="tahun">Tahun</label>
+                    <input type="number" id="tahun" name="tahun">
+                </div>
+
+                <div class="form-group">
+                    <label for="isbn">ISBN</label>
+                    <input type="text" id="isbn" name="isbn">
                 </div>
 
                 <div class="form-group">
                     <label for="stok">Stok</label>
-                    <input type="number" id="stok" name="stok" placeholder="Masukkan jumlah stok">
+                    <input type="number" id="stok" name="stok">
                 </div>
 
-                <button type="submit">Simpan Buku</button>
+                <div class="form-group">
+                    <label for="kategori">Kategori</label>
+
+                    <select id="kategori" name="kategori">
+                        <option value="">Pilih Kategori</option>
+                        <option value="teknologi">Teknologi</option>
+                        <option value="pendidikan">Pendidikan</option>
+                        <option value="novel">Novel</option>
+                    </select>
+                </div>
+
+                <button type="submit">Simpan</button>
+                <button type="reset">Reset</button>
 
             </form>
 
@@ -73,9 +83,8 @@
 
     </main>
 
-
     <footer>
-        <p>© 2026 SIMUS Mini | Jobsheet 3</p>
+        <p>&copy; 2026 SIMUS Mini | Jobsheet 2</p>
     </footer>
 
 </body>
