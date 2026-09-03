@@ -4,7 +4,7 @@ Proyek ini adalah aplikasi web sederhana bernama **SIMUS Mini** yang dikembangka
 
 ---
 
-## 📂 Struktur Direktori Proyek
+## Struktur Folder
 
 ```
 Jobsheet 3/
@@ -21,7 +21,7 @@ Jobsheet 3/
     └── tambah.html          # Halaman Form Tambah Anggota
 ```
 
-## ✨ Fitur Utama (Jobsheet 3)
+## Fitur Utama (Jobsheet 3)
 1. Navigasi Responsif & Hamburger Menu: Menggunakan pendekatan CSS murni (input type="checkbox" dan label) untuk menampilkan menu navigasi secara vertikal pada layar perangkat berukuran kecil.
 2. Layout Kartu Fleksibel (CSS Grid): Ringkasan data dan menu utama disusun menggunakan grid yang secara dinamis menyesuaikan kolomnya berdasarkan lebar layar (3 kolom di desktop, 2 kolom di tablet, dan 1 kolom di mobile).
 3. Tabel Responsif (.table-responsive): Tabel data buku dan anggota dilengkapi pembungkus dengan properti overflow-x: auto agar dapat digeser horizontal tanpa merusak tata letak layar ponsel.
