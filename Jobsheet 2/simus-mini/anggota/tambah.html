@@ -5,24 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Tambah Anggota - SIMUS Mini</title>
+    <title>Tambah Anggota</title>
 
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 
 <body>
 
-    <!-- Header dan Navbar -->
     <header>
         <div class="navbar">
 
             <div class="logo">
                 <h1>SIMUS Mini</h1>
             </div>
-
-            <!-- Jobsheet 3: Hamburger Menu -->
-            <input type="checkbox" id="menu-toggle" class="menu-toggle">
-            <label for="menu-toggle" class="hamburger">☰</label>
 
             <nav>
                 <a href="../index.html">Beranda</a>
@@ -35,41 +30,36 @@
         </div>
     </header>
 
-
     <main>
 
         <section>
 
-            <h2>Tambah Anggota</h2>
+            <h2>Form Tambah Anggota</h2>
 
-            <!-- Jobsheet 3: Form responsive -->
             <form>
 
                 <div class="form-group">
-                    <label for="nama">Nama Anggota</label>
-                    <input type="text" id="nama" name="nama"
-                        placeholder="Masukkan nama anggota">
+                    <label for="nama">Nama</label>
+                    <input type="text" id="nama" name="nama">
                 </div>
 
                 <div class="form-group">
-                    <label for="idanggota">ID Anggota</label>
-                    <input type="text" id="idanggota" name="idanggota"
-                        placeholder="Contoh: AG004">
+                    <label for="nomor">Nomor Anggota</label>
+                    <input type="text" id="nomor" name="nomor">
                 </div>
 
                 <div class="form-group">
                     <label for="alamat">Alamat</label>
-                    <textarea id="alamat" name="alamat"
-                        placeholder="Masukkan alamat anggota"></textarea>
+                    <textarea id="alamat" name="alamat" rows="4"></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="telepon">No. Telepon</label>
-                    <input type="tel" id="telepon" name="telepon"
-                        placeholder="Masukkan nomor telepon">
+                    <label for="hp">Nomor HP</label>
+                    <input type="text" id="hp" name="hp">
                 </div>
 
-                <button type="submit">Simpan Anggota</button>
+                <button type="submit">Simpan</button>
+                <button type="reset">Reset</button>
 
             </form>
 
@@ -77,9 +67,8 @@
 
     </main>
 
-
     <footer>
-        <p>© 2026 SIMUS Mini | Jobsheet 3</p>
+        <p>&copy; 2026 SIMUS Mini | Jobsheet 2</p>
     </footer>
 
 </body>
