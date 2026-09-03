@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Jobsheet 3: Responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SIMUS Mini - Tambah Buku</title>
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+
+        <div class="navbar">
+
+            <div class="logo">
+                <h1>SIMUS Mini</h1>
+            </div>
+
+            <!-- Jobsheet 3: Hamburger Menu -->
+            <input type="checkbox" id="menu-toggle">
+
+            <label for="menu-toggle" class="hamburger">
+                ☰
+            </label>
+
+            <nav>
+                <a href="../index.html">Beranda</a>
+                <a href="list.html">Daftar Buku</a>
+                <a href="tambah.html">Tambah Buku</a>
+                <a href="../anggota/list.html">Daftar Anggota</a>
+                <a href="../anggota/tambah.html">Tambah Anggota</a>
+            </nav>
+
+        </div>
+
+    </header>
+
+    <!-- MAIN -->
+    <main>
+
+        <section>
+
+            <h2>Tambah Buku</h2>
+
+            <p>
+                Silakan isi form berikut untuk menambahkan
+                data buku baru.
+            </p>
+
+            <form>
+
+                <div class="form-group">
+
+                    <label for="judul">
+                        Judul Buku
+                    </label>
+
+                    <input
+                        type="text"
+                        id="judul"
+                        name="judul"
+                        placeholder="Masukkan judul buku"
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="pengarang">
+                        Pengarang
+                    </label>
+
+                    <input
+                        type="text"
+                        id="pengarang"
+                        name="pengarang"
+                        placeholder="Masukkan nama pengarang"
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="tahun">
+                        Tahun
+                    </label>
+
+                    <input
+                        type="number"
+                        id="tahun"
+                        name="tahun"
+                        placeholder="Masukkan tahun terbit"
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="isbn">
+                        ISBN
+                    </label>
+
+                    <input
+                        type="text"
+                        id="isbn"
+                        name="isbn"
+                        placeholder="Masukkan nomor ISBN"
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="stok">
+                        Stok
+                    </label>
+
+                    <input
+                        type="number"
+                        id="stok"
+                        name="stok"
+                        placeholder="Masukkan jumlah stok"
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="kategori">
+                        Kategori
+                    </label>
+
+                    <select id="kategori" name="kategori">
+
+                        <option value="">
+                            -- Pilih Kategori --
+                        </option>
+
+                        <option value="Teknologi">
+                            Teknologi
+                        </option>
+
+                        <option value="Pendidikan">
+                            Pendidikan
+                        </option>
+
+                        <option value="Novel">
+                            Novel
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <button type="submit">
+                    Simpan
+                </button>
+
+                <button type="reset">
+                    Reset
+                </button>
+
+            </form>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+
+        <p>&copy; 2026 SIMUS Mini | Jobsheet 3</p>
+
+    </footer>
+
+</body>
+
+</html>
