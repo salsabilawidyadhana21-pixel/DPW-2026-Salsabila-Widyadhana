@@ -1,21 +1,30 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
+
+    <!-- Jobsheet 3: membuat halaman responsive di berbagai ukuran layar -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SIMUS Mini - Beranda</title>
+    <title>SIMUS Mini</title>
 
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
 
+    <!-- Header dan Navbar -->
     <header>
         <div class="navbar">
+
             <div class="logo">
                 <h1>SIMUS Mini</h1>
             </div>
+
+            <!-- Jobsheet 3: tombol hamburger untuk tampilan mobile -->
+            <input type="checkbox" id="menu-toggle" class="menu-toggle">
+            <label for="menu-toggle" class="hamburger">☰</label>
 
             <nav>
                 <a href="index.html">Beranda</a>
@@ -24,77 +33,71 @@
                 <a href="anggota/list.html">Daftar Anggota</a>
                 <a href="anggota/tambah.html">Tambah Anggota</a>
             </nav>
+
         </div>
     </header>
 
     <main>
 
+        <!-- Bagian pembuka -->
         <section class="hero">
             <h2>Selamat Datang di SIMUS Mini</h2>
-
             <p>
-                Sistem Informasi Perpustakaan sederhana untuk
+                Sistem Informasi Perpustakaan Mini untuk
                 mengelola data buku dan anggota.
             </p>
         </section>
 
+        <!-- Ringkasan Data -->
         <section>
             <h2>Ringkasan Data</h2>
 
             <div class="card-container">
 
-                <article class="card">
+                <div class="card">
                     <h3>Total Buku</h3>
                     <p class="jumlah">5</p>
-                    <p>Buku</p>
-                </article>
+                    <p>Buku tersedia di perpustakaan.</p>
+                </div>
 
-                <article class="card">
+                <div class="card">
                     <h3>Total Anggota</h3>
                     <p class="jumlah">3</p>
-                    <p>Anggota</p>
-                </article>
+                    <p>Anggota terdaftar.</p>
+                </div>
 
-                <article class="card">
+                <div class="card">
                     <h3>Total Dipinjam</h3>
                     <p class="jumlah">2</p>
-                    <p>Buku</p>
-                </article>
+                    <p>Buku sedang dipinjam.</p>
+                </div>
 
             </div>
         </section>
 
-        <section class="menu-section">
+        <!-- Menu Utama -->
+        <section>
             <h2>Menu Utama</h2>
 
             <div class="card-container">
 
-                <article class="card">
+                <div class="card">
                     <h3>Daftar Buku</h3>
-                    <p>Melihat seluruh data buku.</p>
+                    <p>Melihat seluruh data buku yang tersedia.</p>
+                    <a href="buku/list.html" class="btn">Lihat Buku</a>
+                </div>
 
-                    <a href="buku/list.html" class="btn">
-                        Lihat Buku
-                    </a>
-                </article>
-
-                <article class="card">
+                <div class="card">
                     <h3>Tambah Buku</h3>
-                    <p>Menambahkan data buku baru.</p>
+                    <p>Menambahkan data buku baru ke dalam sistem.</p>
+                    <a href="buku/tambah.html" class="btn">Tambah Buku</a>
+                </div>
 
-                    <a href="buku/tambah.html" class="btn">
-                        Tambah Buku
-                    </a>
-                </article>
-
-                <article class="card">
+                <div class="card">
                     <h3>Daftar Anggota</h3>
                     <p>Melihat data anggota perpustakaan.</p>
-
-                    <a href="anggota/list.html" class="btn">
-                        Lihat Anggota
-                    </a>
-                </article>
+                    <a href="anggota/list.html" class="btn">Lihat Anggota</a>
+                </div>
 
             </div>
         </section>
@@ -102,10 +105,9 @@
     </main>
 
     <footer>
-        <p>&copy; 2026 SIMUS Mini | Jobsheet 2</p>
+        <p>© 2026 SIMUS Mini | Jobsheet 3</p>
     </footer>
 
 </body>
-</html>
 
-// index.html
+</html>
