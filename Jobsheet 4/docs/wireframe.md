@@ -76,7 +76,7 @@ Halaman yang sudah ada: Beranda, Daftar Buku, Daftar Anggota — Jobsheet 1-3 ba
 
 - Screen E (Pengembalian): Panel pencarian transaksi aktif untuk memproses pengembalian buku.
 
-- Screen F (Riwayat Transaksi): Tabel arsip rekapitulasi seluruh aktivitas sirkulasi dan status keterlambatan.
+    - (Riwayat Transaksi): Tabel arsip rekapitulasi seluruh aktivitas sirkulasi dan status keterlambatan.
 
 ```
 +---------------------------------------------------+
