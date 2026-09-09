@@ -1,313 +1,245 @@
+/* ===== Reset & Base ===== */
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f4f6f8;
-    color: #333333;
-
-    /*Jobsheet 3: mencegah halaman melebar ke samping */
-    overflow-x: hidden;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #2b2b2b;
+    background-color: #f5f6f8;
+    line-height: 1.5;
 }
 
-/* HEADER */
-
-header {
-    background-color: #2563eb;
-    padding: 15px 8%;
-    color: white;
-}
-
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-}
-
-.logo h1 {
-    margin: 0;
-}
-
-nav {
-    display: flex;
-    gap: 15px;
-}
-
-nav a {
-    color: white;
+a {
+    color: #1d5b8a;
     text-decoration: none;
-    padding: 8px;
 }
 
-nav a:hover {
-    background-color: #1d4ed8;
-    border-radius: 5px;
+a:hover {
+    text-decoration: underline;
 }
 
-
-/* HAMBURGER MENU */
-/* Jobsheet 3 */
-
-#menu-toggle {
-    display: none;
+/* ===== Header & Navbar (Flexbox) ===== */
+header {
+    background-color: #1d5b8a;
+    color: #fff;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
 }
 
-.hamburger {
-    display: none;
-    font-size: 28px;
-    cursor: pointer;
+header h1 {
+    font-size: 1.4rem;
 }
 
+header nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.25rem;
+}
 
-/* MAIN */
+header nav a {
+    color: #fff;
+    font-weight: 500;
+}
 
+/* ===== Main Layout ===== */
 main {
-    width: 85%;
-    max-width: 1100px;
-    margin: 30px auto;
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
 }
 
 section {
-    margin-bottom: 40px;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-.hero {
-    background-color: white;
-    padding: 30px;
-    border-radius: 10px;
+section h2 {
+    margin-bottom: 1rem;
+    color: #1d5b8a;
+}
+
+/* ===== Kartu Statistik (CSS Grid) ===== */
+main section:nth-of-type(2) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+main section:nth-of-type(2) article {
+    background-color: #eef4fa;
+    border-radius: 8px;
+    padding: 1.25rem;
     text-align: center;
 }
 
-
-/* CARD */
-
-.card-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+main section:nth-of-type(2) article h3 {
+    font-size: 0.95rem;
+    color: #55677a;
+    margin-bottom: 0.5rem;
 }
 
-.card {
-    background-color: white;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+main section:nth-of-type(2) article p {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1d5b8a;
 }
 
-.card h3 {
-    margin-top: 0;
-}
-
-.jumlah {
-    font-size: 32px;
-    font-weight: bold;
-    color: #2563eb;
-}
-
-
-/* BUTTON */
-
-.btn,
-button {
-    display: inline-block;
-    background-color: #2563eb;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.btn:hover,
-button:hover {
-    background-color: #1d4ed8;
-}
-
-
-/* TABLE */
-
-.table-responsive {
-    width: 100%;
-    overflow-x: auto;
-}
-
+/* ===== Tabel ===== */
 table {
     width: 100%;
-    min-width: 650px;
     border-collapse: collapse;
-    background-color: white;
-    margin-top: 20px;
 }
 
-th {
-    background-color: #2563eb;
-    color: white;
-    padding: 12px;
-    text-align: left;
-}
-
+th,
 td {
-    padding: 12px;
-    border-bottom: 1px solid #dddddd;
+    text-align: left;
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid #e2e6ea;
+}
+
+thead {
+    background-color: #1d5b8a;
+    color: #fff;
 }
 
 tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #f7f9fb;
 }
 
 tbody tr:hover {
-    background-color: #dbeafe;
+    background-color: #eef4fa;
 }
 
-
-/* FORM */
-
-form {
-    background-color: white;
-    padding: 30px;
-    border-radius: 10px;
-    max-width: 600px;
+td button {
+    padding: 0.35rem 0.7rem;
+    margin-right: 0.35rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
 }
 
-.form-group {
-    margin-bottom: 15px;
+td button:first-of-type {
+    background-color: #f0ad4e;
+    color: #fff;
 }
 
-label {
+td button:last-of-type {
+    background-color: #d9534f;
+    color: #fff;
+}
+
+/* ===== Form ===== */
+form p {
+    margin-bottom: 1rem;
+}
+
+form label {
     display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+    color: #444;
 }
 
-input,
-select,
-textarea {
+form input,
+form select {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #cccccc;
-    border-radius: 5px;
+    max-width: 400px;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid #cdd4da;
+    border-radius: 4px;
+    font-size: 1rem;
 }
 
-input:focus,
-select:focus,
-textarea:focus {
-    outline: none;
-    border-color: #2563eb;
+form button[type="submit"] {
+    background-color: #1d5b8a;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
 }
 
+form button[type="submit"]:hover {
+    background-color: #164869;
+}
 
-/* FOOTER */
-
+/* ===== Footer ===== */
 footer {
-    background-color: #1f2937;
-    color: white;
     text-align: center;
-    padding: 20px;
+    padding: 1.25rem;
+    color: #7a8794;
+    font-size: 0.9rem;
 }
 
+/* ===== Tabel Responsif ===== */
+.table-responsive {
+    overflow-x: auto;
+}
 
-/* TABLET */
-/* Jobsheet 3 */
+/* ===== Hamburger Menu (checkbox hack) ===== */
+.nav-toggle {
+    display: none;
+}
 
+.nav-toggle-label {
+    display: none;
+    font-size: 1.6rem;
+    color: #fff;
+    cursor: pointer;
+}
+
+/* ===== Responsive Breakpoints ===== */
+
+/* Tablet ke bawah */
 @media (max-width: 768px) {
-
-    header {
-        padding: 15px 5%;
-    }
-
-    .navbar {
-        flex-wrap: wrap;
-    }
-
-    .hamburger {
-        display: block;
-    }
-
-    nav {
-        display: none;
-        width: 100%;
-        flex-direction: column;
-        gap: 5px;
-        margin-top: 15px;
-    }
-
-    #menu-toggle:checked ~ nav {
-        display: flex;
-    }
-
-    nav a {
-        display: block;
-        padding: 10px;
-    }
-
-    main {
-        width: 90%;
-    }
-
-    .card-container {
+    main section:nth-of-type(2) {
         grid-template-columns: repeat(2, 1fr);
     }
-
-    form {
-        max-width: 100%;
-    }
 }
 
-
-/* MOBILE */
-/* Jobsheet 3 */
-
+/* Mobile */
 @media (max-width: 480px) {
-
     header {
-        padding: 12px 4%;
+        position: relative;
     }
 
-    .logo h1 {
-        font-size: 24px;
+    .nav-toggle-label {
+        display: block;
     }
 
-    main {
-        width: 92%;
-        margin: 20px auto;
+    header nav {
+        display: none;
+        width: 100%;
+        order: 3;
+        margin-top: 1rem;
     }
 
-    .hero {
-        padding: 20px;
+    .nav-toggle:checked ~ nav {
+        display: block;
     }
 
-    .card-container {
+    header nav ul {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    main section:nth-of-type(2) {
         grid-template-columns: 1fr;
     }
 
-    .card {
-        padding: 20px;
+    form input,
+    form select {
+        max-width: 100%;
     }
-
-    form {
-        padding: 20px;
-    }
-
-    .btn,
-    button {
-        width: 100%;
-        text-align: center;
-        margin-bottom: 5px;
-    }
-}
-
-
-/* DESKTOP */
-/* Jobsheet 3 */
-
-@media (min-width: 1024px) {
-
-    .card-container {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
 }
