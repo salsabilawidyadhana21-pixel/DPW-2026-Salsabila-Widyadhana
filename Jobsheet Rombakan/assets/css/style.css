@@ -1,0 +1,336 @@
+/* ============================================================
+   SIMPUS-MINI — STYLESHEET (Jobsheet 6, versi rombakan — FIXED)
+   Struktur file ini dibagi per bagian (section): Reset -> Header -> Layout ->
+   Hero -> Kartu Ringkasan -> Tabel -> Form -> Footer -> Responsive
+   ============================================================ */
+
+/* ===== 1. Reset & Base =====
+   Menghilangkan margin/padding bawaan browser supaya semua
+   elemen punya titik awal yang seragam. */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #4a3f4d;
+    background-color: #faf6f9;
+    line-height: 1.6;
+}
+
+a {
+    color: #b06a9a;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* ===== 2. Header & Navbar =====
+   Warna utama tema: pink lembut (#d17ba0). Header dibuat sticky
+   supaya menu tetap terlihat saat scroll ke bawah. */
+header {
+    background-color: #d17ba0;
+    color: #fff;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+header h1 {
+    font-size: 1.4rem;
+    letter-spacing: 0.5px;
+}
+
+header nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.25rem;
+}
+
+header nav a {
+    color: #fff;
+    font-weight: 500;
+    padding: 0.25rem 0;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+header nav a:hover {
+    text-decoration: none;
+    border-bottom-color: #fff;
+}
+
+/* ===== 3. Layout Utama ===== */
+main {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+/* Kartu putih pembungkus tiap section, dipakai berulang
+   di semua halaman (Beranda, Daftar Buku, Form, dll). */
+section {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+section h2 {
+    margin-bottom: 1rem;
+    color: #b06a9a;
+}
+
+/* ===== 4. Hero / Banner Sambutan =====
+   PENTING: pakai class ".hero" (bukan :first-of-type) supaya
+   gaya ini HANYA nempel di section yang sengaja dikasih
+   class="hero" di index.html — tidak ikut ke halaman lain
+   seperti Daftar Buku / Daftar Anggota yang section pertamanya
+   berisi tabel, bukan banner sambutan. */
+.hero {
+    background: linear-gradient(135deg, #d17ba0, #c9a2dd);
+    color: #fff;
+}
+
+.hero h2 {
+    color: #fff;
+}
+
+/* ===== 5. Kartu Ringkasan (Statistik) =====
+   Menampilkan Total Buku, Total Anggota, Sedang Dipinjam
+   dalam bentuk grid 3 kolom. */
+main section:nth-of-type(2) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+/* Judul "Ringkasan" tetap memenuhi satu baris penuh */
+main section:nth-of-type(2) h2 {
+    grid-column: 1 / -1;
+}
+
+main section:nth-of-type(2) article {
+    background-color: #fbeef5;
+    border-radius: 10px;
+    padding: 1.25rem;
+    text-align: center;
+    transition: transform 0.15s ease;
+}
+
+/* Efek kecil saat kartu di-hover, biar terlihat interaktif */
+main section:nth-of-type(2) article:hover {
+    transform: translateY(-3px);
+}
+
+main section:nth-of-type(2) article h3 {
+    font-size: 0.95rem;
+    color: #8a7288;
+    margin-bottom: 0.5rem;
+}
+
+main section:nth-of-type(2) article p {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #b06a9a;
+}
+
+/* ===== 6. Tabel Data (Daftar Buku / Anggota) ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid #f0dfec;
+}
+
+thead {
+    background-color: #d17ba0;
+    color: #fff;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #fdf9fc;
+}
+
+tbody tr:hover {
+    background-color: #fbeef5;
+}
+
+/* Tombol Edit / Hapus di tiap baris tabel */
+td button {
+    padding: 0.35rem 0.7rem;
+    margin-right: 0.35rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #fff;
+}
+
+td button:first-of-type {
+    background-color: #e0a95c; /* tombol Edit: mustard lembut */
+}
+
+td button:last-of-type {
+    background-color: #d1607e; /* tombol Hapus: rose */
+}
+
+/* ===== 7. Form (Tambah Buku / Tambah Anggota) ===== */
+form p {
+    margin-bottom: 1rem;
+}
+
+form label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+    color: #5e4a5c;
+}
+
+form input,
+form select {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid #e6d0e0;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+form input:focus,
+form select:focus {
+    outline: none;
+    border-color: #d17ba0;
+    box-shadow: 0 0 0 3px rgba(209, 123, 160, 0.15);
+}
+
+form button[type="submit"] {
+    background-color: #d17ba0;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+form button[type="submit"]:hover {
+    background-color: #b8628a;
+}
+
+/* ===== 8. Footer ===== */
+footer {
+    text-align: center;
+    padding: 1.25rem;
+    color: #a58ea2;
+    font-size: 0.9rem;
+}
+
+/* ===== 9. Komponen Pendukung ===== */
+
+/* Tabel yang bisa di-scroll horizontal di layar kecil */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Tombol hamburger, disembunyikan di layar besar */
+.nav-toggle-label {
+    display: none;
+    font-size: 1.6rem;
+    color: #fff;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* Pesan error validasi form */
+.error {
+    display: block;
+    color: #d1607e;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+/* Kolom pencarian di atas tabel */
+.search-box {
+    margin-bottom: 1rem;
+}
+
+.search-box label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+}
+
+.search-box input {
+    width: 100%;
+    max-width: 320px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #e6d0e0;
+    border-radius: 6px;
+}
+
+/* ===== 10. Responsive: Tablet ===== */
+@media (max-width: 768px) {
+
+    main section:nth-of-type(2) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+/* ===== 11. Responsive: Mobile =====
+   Di layar kecil, menu navigasi disembunyikan dan diganti
+   tombol hamburger (☰) yang bisa dibuka/tutup lewat app.js. */
+@media (max-width: 480px) {
+
+    header {
+        position: relative;
+    }
+
+    .nav-toggle-label {
+        display: block;
+    }
+
+    header nav {
+        display: none;
+        width: 100%;
+        order: 3;
+        margin-top: 1rem;
+    }
+
+    header nav.nav-open {
+        display: block;
+    }
+
+    header nav ul {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    main section:nth-of-type(2) {
+        grid-template-columns: 1fr;
+    }
+
+    form input,
+    form select {
+        max-width: 100%;
+    }
+
+}
