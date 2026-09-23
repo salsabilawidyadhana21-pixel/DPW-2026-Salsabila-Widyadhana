@@ -333,4 +333,46 @@ footer {
         max-width: 100%;
     }
 
+    /* ===== Tambahan Rombakan: Buku Terbaru ===== */
+
+.buku-terbaru h2 {
+margin-bottom: 1rem;
+}
+
+.daftar-buku-terbaru {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 1rem;
+}
+
+.daftar-buku-terbaru article {
+background-color: #fbeef5;
+border-radius: 10px;
+padding: 1rem;
+text-align: center;
+}
+
+.daftar-buku-terbaru article h3 {
+color: #b06a9a;
+margin-bottom: 0.35rem;
+}
+
+.daftar-buku-terbaru article p {
+color: #8a7288;
+}
+
+/* Menyesuaikan tampilan di layar kecil */
+@media (max-width: 768px) {
+.daftar-buku-terbaru {
+grid-template-columns: repeat(2, 1fr);
+}
+}
+
+@media (max-width: 480px) {
+.daftar-buku-terbaru {
+grid-template-columns: 1fr;
+}
+}
+
+
 }
