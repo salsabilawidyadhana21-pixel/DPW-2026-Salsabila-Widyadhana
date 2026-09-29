@@ -2,8 +2,8 @@
 
 $page_title = "Beranda";
 
-require _DIR_ . 'includes/header.php';
-require _DIR_ . 'includes/test_koneksi.php';
+require __DIR__ . '/includes/header.php';
+require __DIR__ . '/includes/test_koneksi.php';
 
 $stmtBuku = $pdo->query("SELECT COUNT(*) FROM buku");
 $totalBuku = $stmtBuku->fetchColumn();
