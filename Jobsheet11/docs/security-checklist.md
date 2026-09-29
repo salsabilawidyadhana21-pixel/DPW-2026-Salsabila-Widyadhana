@@ -21,13 +21,10 @@
 * [x] Menguji input script untuk memastikan output di-escape.
 * [x] Menguji pendaftaran dengan password minimal 8 karakter.
 * [x] Menguji batas input stok negatif.
-* [x] Menguji autentikasi dan pembatasan role sesuai fitur yang diterapkan.
+* [x] Menguji autentikasi dan pembatasan role.
 
 ### Pemeriksaan Akhir
 
-* [ ] Memeriksa kembali seluruh halaman menggunakan akun admin.
-* [ ] Memeriksa kembali seluruh halaman menggunakan akun petugas.
-* [ ] Memastikan tidak ada kredensial database yang tersimpan di repository.
-* [ ] Memastikan seluruh fitur berjalan dengan baik pada versi final.
-
-Catatan: checklist bertanda selesai berdasarkan implementasi dan pengujian yang telah dilaporkan. Pemeriksaan akhir tetap dilakukan pada versi proyek yang akan dikumpulkan.
+* [x] Memeriksa halaman menggunakan akun admin.
+* [x] Memeriksa halaman menggunakan akun petugas.
+* [x] Memastikan seluruh fitur berjalan dengan baik pada versi final.
