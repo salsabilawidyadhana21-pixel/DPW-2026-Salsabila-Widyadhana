@@ -1,6 +1,6 @@
 <?php
 session_start();
-// Sesuaikan dengan file koneksi database
+// menyesuaikan dengan file koneksi database
 require_once '../config/koneksi.php';
 
 if (isset($_GET['id']) && isset($_GET['status'])) {
