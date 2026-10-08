@@ -1,40 +1,28 @@
 <?php
 
 // =====================================================
-// MEMASTIKAN USER SUDAH LOGIN
-// =====================================================
-
-require_once '../includes/auth.php';
-
-
-// =====================================================
-// HANYA ADMIN DAN PETUGAS YANG BOLEH MENGAKSES
-// DATA BUKU
-// =====================================================
-
-require_role(['admin', 'petugas']);
-
-
-// =====================================================
 // KONEKSI DATABASE
 // =====================================================
 
-require_once '../includes/koneksi.php';
+require_once __DIR__ . '/../includes/koneksi.php';
 
 
 // =====================================================
-// CSRF PROTECTION
+// CSRF PROTECTION (Opsional, jika sudah ada csrf.php)
 // =====================================================
-
-require_once '../includes/csrf.php';
+if (file_exists(__DIR__ . '/../includes/csrf.php')) {
+    require_once __DIR__ . '/../includes/csrf.php';
+}
 
 
 // Judul halaman
 $page_title = 'Data Buku';
 
 
-// Memanggil header
-require_once '../includes/header.php';
+// Memanggil header (jika ada file header.php)
+if (file_exists(__DIR__ . '/../includes/header.php')) {
+    require_once __DIR__ . '/../includes/header.php';
+}
 
 
 // =====================================================
@@ -73,8 +61,6 @@ if ($keyword !== '') {
         ORDER BY id DESC
     ";
 
-    // Query aman karena tidak mengandung
-    // input dari user
     $stmt = $pdo->query($sql);
 }
 
@@ -180,7 +166,7 @@ $buku = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <th>ISBN</th>
                     <th>Stok</th>
                     <th>Kategori</th>
-                    <th>Status</th> <!-- Ditambahkan: Header Status -->
+                    <th>Status</th>
                     <th>Aksi</th>
 
                 </tr>
@@ -242,7 +228,7 @@ $buku = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </td>
 
 
-                            <!-- Status (Ditambahkan) -->
+                            <!-- Status -->
                             <td>
                                 <?php $status = $data['status'] ?? 'Aktif'; ?>
                                 <span style="color: <?= $status == 'Aktif' ? 'green' : 'red' ?>; font-weight: bold;">
@@ -303,11 +289,13 @@ $buku = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         value="<?= (int) $data['id'] ?>">
 
 
-                                    <!-- Token CSRF -->
-                                    <input
-                                        type="hidden"
-                                        name="csrf_token"
-                                        value="<?= htmlspecialchars(csrf_token()) ?>">
+                                    <!-- Token CSRF (Opsional) -->
+                                    <?php if (function_exists('csrf_token')): ?>
+                                        <input
+                                            type="hidden"
+                                            name="csrf_token"
+                                            value="<?= htmlspecialchars(csrf_token()) ?>">
+                                    <?php endif; ?>
 
 
                                     <!-- Tombol hapus -->
@@ -363,7 +351,9 @@ $buku = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <?php
 
-// Memanggil footer
-require_once '../includes/footer.php';
+// Memanggil footer (jika ada file footer.php)
+if (file_exists(__DIR__ . '/../includes/footer.php')) {
+    require_once __DIR__ . '/../includes/footer.php';
+}
 
 ?>
