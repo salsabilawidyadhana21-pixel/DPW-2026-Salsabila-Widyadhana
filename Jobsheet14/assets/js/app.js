@@ -1,14 +1,3 @@
-// ===== Hamburger menu (JS-driven, menggantikan checkbox hack) =====
-function initNavToggle() {
-    const toggleBtn = document.getElementById("nav-toggle-btn");
-    const nav = document.querySelector("header nav");
-    if (!toggleBtn || !nav) return;
-
-    toggleBtn.addEventListener("click", function () {
-        nav.classList.toggle("nav-open");
-    });
-}
-
 // =====================================================
 // 1. KONFIRMASI LOGOUT
 // =====================================================
@@ -38,3 +27,28 @@ logoutLinks.forEach(function (link) {
     });
 
 });
+
+
+// =====================================================
+// 2. HAMBURGER MENU
+// =====================================================
+
+// Mencari tombol hamburger
+const navToggle = document.getElementById('nav-toggle');
+
+// Mencari menu navigasi
+const mainNav = document.getElementById('main-nav');
+
+
+// Memastikan kedua elemen ditemukan
+if (navToggle && mainNav) {
+
+    // Menjalankan fungsi ketika hamburger diklik
+    navToggle.addEventListener('click', function () {
+
+        // Menampilkan / menyembunyikan menu
+        mainNav.classList.toggle('nav-open');
+
+    });
+
+}
