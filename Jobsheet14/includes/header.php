@@ -6,6 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $page_title = $page_title ?? 'SIMPUS-Mini';
 
+// Menentukan folder utama Jobsheet
 $base_path = '/Jobsheet14';
 
 $is_logged_in = isset($_SESSION['user_id']);
