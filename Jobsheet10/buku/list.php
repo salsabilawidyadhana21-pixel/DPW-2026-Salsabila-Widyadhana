@@ -26,7 +26,7 @@ require_once '../includes/koneksi.php';
 // CSRF PROTECTION
 // =====================================================
 
-require_once '../includes/csrf.php';
+require_once __DIR__ . '/../includes/csrf.php';
 
 
 // Judul halaman
