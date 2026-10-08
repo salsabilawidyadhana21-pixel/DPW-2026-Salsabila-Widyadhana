@@ -22,13 +22,6 @@ require_role(['admin', 'petugas']);
 require_once __DIR__ . '/../includes/koneksi.php';
 
 
-// =====================================================
-// CSRF PROTECTION
-// =====================================================
-
-require_once __DIR__ . '/../includes/csrf.php';
-
-
 // Judul halaman
 $page_title = 'Data Buku';
 
@@ -180,7 +173,7 @@ $buku = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <th>ISBN</th>
                     <th>Stok</th>
                     <th>Kategori</th>
-                    <th>Status</th> <!-- Ditambahkan: Header Status -->
+                    <th>Status</th>
                     <th>Aksi</th>
 
                 </tr>
@@ -242,7 +235,7 @@ $buku = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </td>
 
 
-                            <!-- Status (Ditambahkan) -->
+                            <!-- Status -->
                             <td>
                                 <?php $status = $data['status'] ?? 'Aktif'; ?>
                                 <span style="color: <?= $status == 'Aktif' ? 'green' : 'red' ?>; font-weight: bold;">
@@ -301,13 +294,6 @@ $buku = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         type="hidden"
                                         name="id"
                                         value="<?= (int) $data['id'] ?>">
-
-
-                                    <!-- Token CSRF -->
-                                    <input
-                                        type="hidden"
-                                        name="csrf_token"
-                                        value="<?= htmlspecialchars(csrf_token()) ?>">
 
 
                                     <!-- Tombol hapus -->
