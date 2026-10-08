@@ -8,8 +8,7 @@ require_once '../includes/auth.php';
 
 
 // =====================================================
-// HANYA ADMIN DAN PETUGAS YANG BOLEH MENGAKSES
-// DATA BUKU
+// HANYA ADMIN DAN PETUGAS YANG BOLEH MENGAKSES DATA BUKU
 // =====================================================
 
 require_role(['admin', 'petugas']);
