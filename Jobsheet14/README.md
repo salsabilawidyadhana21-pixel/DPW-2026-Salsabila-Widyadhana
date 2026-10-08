@@ -2,8 +2,8 @@
 
 ## Tautan Aplikasi Resmi (Live Deployment)
 Aplikasi ini telah berhasil dipindahkan dari lingkungan lokal (*localhost*) ke internet dan dapat diakses secara publik melalui tautan berikut:
-* **URL Utama Aplikasi (Jobsheet 13):** https://onrender.com
-* **URL Pengembangan Final (Jobsheet 14):** https://onrender.com
+* **URL Utama Aplikasi (Jobsheet 13):** https://dpw-2026-salsabila-widyadhana.onrender.com/Jobsheet13/auth/login.php
+* **URL Pengembangan Final (Jobsheet 14):** https://dpw-2026-salsabila-widyadhana.onrender.com/Jobsheet14/auth/login.php
 
 ---
 
