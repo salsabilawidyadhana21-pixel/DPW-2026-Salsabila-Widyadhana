@@ -180,6 +180,7 @@ $buku = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <th>ISBN</th>
                     <th>Stok</th>
                     <th>Kategori</th>
+                    <th>Status</th> <!-- Ditambahkan: Header Status -->
                     <th>Aksi</th>
 
                 </tr>
@@ -241,6 +242,15 @@ $buku = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </td>
 
 
+                            <!-- Status (Ditambahkan) -->
+                            <td>
+                                <?php $status = $data['status'] ?? 'Aktif'; ?>
+                                <span style="color: <?= $status == 'Aktif' ? 'green' : 'red' ?>; font-weight: bold;">
+                                    <?= htmlspecialchars($status) ?>
+                                </span>
+                            </td>
+
+
                             <!-- Aksi -->
                             <td>
 
@@ -256,6 +266,24 @@ $buku = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     Edit
 
                                 </a>
+
+
+                                <!-- =========================
+                                     TOMBOL TOGGLE STATUS (NONAKTIF/AKTIF)
+                                     ========================= -->
+                                <?php if (($data['status'] ?? 'Aktif') == 'Aktif'): ?>
+                                    <a href="toggle_status.php?id=<?= (int) $data['id'] ?>&status=Nonaktif" 
+                                       class="btn" style="background-color: #f0ad4e; color: #fff;"
+                                       onclick="return confirm('Yakin ingin menonaktifkan buku ini?');">
+                                       Nonaktifkan
+                                    </a>
+                                <?php else: ?>
+                                    <a href="toggle_status.php?id=<?= (int) $data['id'] ?>&status=Aktif" 
+                                       class="btn" style="background-color: #5cb85c; color: #fff;"
+                                       onclick="return confirm('Yakin ingin mengaktifkan kembali buku ini?');">
+                                       Aktifkan
+                                    </a>
+                                <?php endif; ?>
 
 
                                 <!-- =========================
@@ -311,7 +339,7 @@ $buku = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <tr>
 
                         <td
-                            colspan="8"
+                            colspan="9"
                             style="text-align: center;">
 
                             Data buku tidak ditemukan.
