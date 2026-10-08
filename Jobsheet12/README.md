@@ -4,16 +4,6 @@
 
 SIMPUS Mini merupakan aplikasi sistem informasi perpustakaan sederhana berbasis PHP dan PostgreSQL. Pada Jobsheet 12, aplikasi dikembangkan dengan menambahkan fitur peminjaman, pengembalian, riwayat transaksi, dan ringkasan data pada dashboard.
 
-## Teknologi
-
-* PHP
-* PostgreSQL
-* PDO
-* HTML
-* CSS
-* JavaScript
-* Laragon
-
 ## Fitur
 
 * Login dan autentikasi pengguna.
@@ -27,6 +17,26 @@ SIMPUS Mini merupakan aplikasi sistem informasi perpustakaan sederhana berbasis 
 * Pencegahan peminjaman baru bagi anggota yang memiliki pinjaman terlambat.
 * Pembatasan akses berdasarkan role.
 * Validasi input dan perlindungan CSRF.
+
+## Fitur Utama yang Ditambahkan
+
+1. **Kolom Status pada Database**:
+   - Menambahkan kolom `status` pada tabel buku untuk mengontrol ketersediaan data secara *soft delete* (tanpa harus menghapus baris data secara permanen dari database).
+
+2. **Logika Toggle Status (`toggle_status.php`)**:
+   - Berkas skrip backend baru yang menangani proses pembalikan status (mengubah status Aktif menjadi Nonaktif, dan sebaliknya) saat tombol aksi diklik oleh pengguna.
+
+3. **Pembaruan Halaman Daftar Buku (`buku/list.php`)**:
+   - Menyesuaikan tampilan antarmuka (UI) pada tabel daftar buku.
+   - Menyertakan tombol interaktif untuk melakukan *toggle* status secara langsung dari halaman daftar.
+
+## Teknologi yang Digunakan
+- **PHP** (Native)
+- **PostgreSQL** (Database Cloud via Supabase)
+- **Laragon** (Untuk menjalankan web, sebelum menggunakan hosting render)
+- **HTML/CSS & Bootstrap** (Antarmuka Pengguna)
+- **Git & GitHub** (Kontrol Versi)
+- **Render** (Deployment Aplikasi Web)
 
 ## Struktur Folder
 
@@ -44,16 +54,6 @@ Jobsheet12/
 ```
 
 Struktur di atas merupakan gambaran umum. Sesuaikan dengan struktur proyek yang digunakan.
-
-## Instalasi
-
-1. Jalankan Laragon dan PostgreSQL.
-2. Pastikan database `simpus_mini` sudah tersedia.
-3. Pastikan tabel buku, anggota, users, dan peminjaman sudah tersedia.
-4. Sesuaikan konfigurasi koneksi database pada `includes/koneksi.php`.
-5. Letakkan folder Jobsheet12 pada direktori `www` Laragon.
-6. Buka `http://localhost/Jobsheet12/` melalui browser.
-7. Login menggunakan akun yang telah terdaftar.
 
 ## Alur Peminjaman
 

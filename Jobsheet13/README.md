@@ -62,3 +62,22 @@ Jika ingin menjalankan ulang proyek ini di lingkungan komputer lokal Anda:
 <img width="640" height="331" alt="image" src="https://github.com/user-attachments/assets/9bc48ea0-c749-4770-95e1-9da80523ae45" />
 
 <img width="476" height="335" alt="image" src="https://github.com/user-attachments/assets/1f0d1aad-8fe5-4854-b4d8-043641c04a1e" />
+
+## Fitur Utama yang Ditambahkan
+
+1. **Kolom Status pada Database**:
+   - Menambahkan kolom `status` pada tabel buku untuk mengontrol ketersediaan data secara *soft delete* (tanpa harus menghapus baris data secara permanen dari database).
+
+2. **Logika Toggle Status (`toggle_status.php`)**:
+   - Berkas skrip backend baru yang menangani proses pembalikan status (mengubah status Aktif menjadi Nonaktif, dan sebaliknya) saat tombol aksi diklik oleh pengguna.
+
+3. **Pembaruan Halaman Daftar Buku (`buku/list.php`)**:
+   - Menyesuaikan tampilan antarmuka (UI) pada tabel daftar buku.
+   - Menyertakan tombol interaktif untuk melakukan *toggle* status secara langsung dari halaman daftar.
+
+## Teknologi yang Digunakan
+- **PHP** (Native)
+- **PostgreSQL** (Database Cloud via Supabase)
+- **HTML/CSS & Bootstrap** (Antarmuka Pengguna)
+- **Git & GitHub** (Kontrol Versi)
+- **Render** (Deployment Aplikasi Web)
