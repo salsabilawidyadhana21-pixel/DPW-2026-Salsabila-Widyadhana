@@ -1,7 +1,7 @@
 <?php
 session_start();
 // menyesuaikan dengan file koneksi database
-require_once '../config/koneksi.php';
+require_once __DIR__ . '/../includes/koneksi.php';
 
 if (isset($_GET['id']) && isset($_GET['status'])) {
     $id = intval($_GET['id']);
