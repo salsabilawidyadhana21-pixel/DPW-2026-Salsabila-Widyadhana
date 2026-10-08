@@ -4,7 +4,7 @@
 // MEMASTIKAN USER SUDAH LOGIN
 // =====================================================
 
-require_once '../includes/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
 
 
 // =====================================================
@@ -19,7 +19,7 @@ require_role(['admin', 'petugas']);
 // KONEKSI DATABASE
 // =====================================================
 
-require_once '../includes/koneksi.php';
+require_once __DIR__ . '/../includes/koneksi.php';
 
 
 // =====================================================
@@ -34,7 +34,7 @@ $page_title = 'Data Buku';
 
 
 // Memanggil header
-require_once '../includes/header.php';
+require_once __DIR__ . '/../includes/header.php';
 
 
 // =====================================================
@@ -364,6 +364,6 @@ $buku = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <?php
 
 // Memanggil footer
-require_once '../includes/footer.php';
+require_once __DIR__ . '/../includes/footer.php';
 
 ?>
