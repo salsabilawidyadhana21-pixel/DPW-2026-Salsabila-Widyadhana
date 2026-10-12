@@ -1,33 +1,35 @@
-
 <?php
 if (session_status() === PHP_SESSION_NONE) {
-    session_set_cookie_params([
-        'lifetime' => 0,
-        'path' => '/',
-        'httponly' => true,
-        'samesite' => 'Lax'
-    ]);
     session_start();
 }
-require __DIR__ . '/../includes/csrf.php';
-require __DIR__ . '/../includes/koneksi.php';
+require_once __DIR__ . '/../includes/csrf.php';
+require_once __DIR__ . '/../includes/koneksi.php';
 
-csrf_verify();
+// Verifikasi token CSRF dengan nama fungsi yang benar
+verify_csrf_token($_POST['csrf_token'] ?? null);
 
 $username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
+
+if ($username === '' || $password === '') {
+    $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Username dan password wajib diisi.'];
+    header('Location: login.php');
+    exit;
+}
 
 $stmt = $pdo->prepare("SELECT * FROM users WHERE username = :username");
 $stmt->execute(['username' => $username]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if ($user && password_verify($password, $user['password'])) {
-    // Regenerasi session ID setelah login berhasil untuk mencegah session fixation.
     session_regenerate_id(true);
 
-    $_SESSION['user_id'] = $user['id'];
-    $_SESSION['nama'] = $user['nama'];
-    $_SESSION['role'] = $user['role'];
+    $_SESSION['user_id']  = $user['id'];
+    $_SESSION['nama']     = $user['nama'];
+    $_SESSION['username'] = $user['username'];
+    $_SESSION['role']     = $user['role'];
+
+    $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Selamat datang kembali, ' . htmlspecialchars($user['nama'], ENT_QUOTES, 'UTF-8') . '!'];
     header('Location: ../index.php');
     exit;
 }
@@ -35,3 +37,4 @@ if ($user && password_verify($password, $user['password'])) {
 $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Username atau password salah.'];
 header('Location: login.php');
 exit;
+?>

@@ -1,27 +1,20 @@
-
 <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require __DIR__ . '/../includes/csrf.php';
-require __DIR__ . '/../includes/koneksi.php';
+require_once __DIR__ . '/../includes/csrf.php';
+require_once __DIR__ . '/../includes/koneksi.php';
 
-csrf_verify();
+verify_csrf_token($_POST['csrf_token'] ?? null);
 
-$nama = trim($_POST['nama'] ?? '');
-$username = trim($_POST['username'] ?? '');
+$nama     = trim(filter_var($_POST['nama'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+$username = trim(filter_var($_POST['username'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
 $password = $_POST['password'] ?? '';
 
 $errors = [];
-if ($nama === '') {
-    $errors[] = "Nama wajib diisi.";
-}
-if ($username === '') {
-    $errors[] = "Username wajib diisi.";
-}
-if (strlen($password) < 6) {
-    $errors[] = "Password minimal 6 karakter.";
-}
+if ($nama === '') $errors[] = "Nama wajib diisi.";
+if ($username === '') $errors[] = "Username wajib diisi.";
+if (strlen($password) < 6) $errors[] = "Password minimal 6 karakter.";
 
 if (!empty($errors)) {
     $_SESSION['flash'] = ['type' => 'error', 'pesan' => implode(' ', $errors)];
@@ -37,15 +30,14 @@ if ($cek->fetch()) {
     exit;
 }
 
-$stmt = $pdo->prepare(
-    "INSERT INTO users (nama, username, password, role) VALUES (:nama, :username, :password, 'petugas')"
-);
+$stmt = $pdo->prepare("INSERT INTO users (nama, username, password, role) VALUES (:nama, :username, :password, 'petugas')");
 $stmt->execute([
-    'nama' => $nama,
+    'nama'     => $nama,
     'username' => $username,
-    'password' => password_hash($password, PASSWORD_DEFAULT),
+    'password' => password_hash($password, PASSWORD_DEFAULT)
 ]);
 
 $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Registrasi berhasil, silakan login.'];
 header('Location: login.php');
 exit;
+?>
