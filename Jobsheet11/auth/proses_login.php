@@ -2,11 +2,17 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
 require_once __DIR__ . '/../includes/csrf.php';
 require_once __DIR__ . '/../includes/koneksi.php';
 
-// Verifikasi token CSRF dengan nama fungsi yang benar
-verify_csrf_token($_POST['csrf_token'] ?? null);
+// Verifikasi CSRF token
+$token = $_POST['csrf_token'] ?? '';
+if (empty($token) || !isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $token)) {
+    $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Token CSRF tidak valid.'];
+    header('Location: login.php');
+    exit;
+}
 
 $username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
