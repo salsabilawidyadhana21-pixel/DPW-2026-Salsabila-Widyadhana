@@ -1,0 +1,26 @@
+[
+    {
+        "nama_produk": "Laptop Gaming",
+        "kategori": "Elektronik",
+        "harga": "12.500.000",
+        "stok": 5
+    },
+    {
+        "nama_produk": "Mouse Wireless",
+        "kategori": "Aksesoris",
+        "harga": "150.000",
+        "stok": 12
+    },
+    {
+        "nama_produk": "Keyboard Mekanikal",
+        "kategori": "Aksesoris",
+        "harga": "450.000",
+        "stok": 8
+    },
+    {
+        "nama_produk": "Monitor 24 Inch",
+        "kategori": "Elektronik",
+        "harga": "1.800.000",
+        "stok": 3
+    }
+]

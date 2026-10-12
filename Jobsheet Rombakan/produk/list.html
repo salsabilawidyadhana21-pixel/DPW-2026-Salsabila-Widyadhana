@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TOKO-Lite | Daftar Produk</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>TOKO-Lite</h1>
+
+        <button type="button" id="nav-toggle-btn" class="nav-toggle-label" aria-label="Menu">&#9776;</button>
+
+        <nav>
+            <ul>
+                <li><a href="../index.html">Beranda</a></li>
+                <li><a href="list.html">Daftar Produk</a></li>
+                <li><a href="tambah.html">Tambah Produk</a></li>
+                <li><a href="../pelanggan/list.html">Daftar Pelanggan</a></li>
+                <li><a href="../pelanggan/tambah.html">Tambah Pelanggan</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Daftar Produk</h2>
+
+            <div class="search-box">
+                <label for="search-input">Cari Nama Produk</label>
+                <input type="text" id="search-input" placeholder="Ketik nama produk...">
+            </div>
+
+            <p id="loading-indicator" style="display:none;">Memuat data...</p>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama Produk</th>
+                            <th>Kategori</th>
+                            <th>Harga</th>
+                            <th>Stok</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data dimuat lewat produk.js -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 TOKO-Lite &mdash; Jobsheet Rombakan</p>
+    </footer>
+
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/produk.js"></script>
+
+</body>
+
+</html>

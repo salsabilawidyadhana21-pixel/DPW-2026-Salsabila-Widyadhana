@@ -1,0 +1,26 @@
+[
+    {
+        "id_pelanggan": "P001",
+        "nama": "Ahmad Rizky",
+        "kota": "Surabaya",
+        "no_hp": "0812xxxx"
+    },
+    {
+        "id_pelanggan": "P002",
+        "nama": "Siti Nurhaliza",
+        "kota": "Malang",
+        "no_hp": "0813xxxx"
+    },
+    {
+        "id_pelanggan": "P003",
+        "nama": "Budi Pratama",
+        "kota": "Sidoarjo",
+        "no_hp": "0814xxxx"
+    },
+    {
+        "id_pelanggan": "P004",
+        "nama": "Dewi Anggraini",
+        "kota": "Gresik",
+        "no_hp": "0815xxxx"
+    }
+]

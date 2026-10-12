@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TOKO-Lite | Tambah Produk</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>TOKO-Lite</h1>
+
+        <button type="button" id="nav-toggle-btn" class="nav-toggle-label" aria-label="Menu">&#9776;</button>
+
+        <nav>
+            <ul>
+                <li><a href="../index.html">Beranda</a></li>
+                <li><a href="list.html">Daftar Produk</a></li>
+                <li><a href="tambah.html">Tambah Produk</a></li>
+                <li><a href="../pelanggan/list.html">Daftar Pelanggan</a></li>
+                <li><a href="../pelanggan/tambah.html">Tambah Pelanggan</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Tambah Produk</h2>
+
+            <form id="form-tambah">
+                <p>
+                    <label for="nama_produk">Nama Produk</label>
+                    <input type="text" id="nama_produk" name="nama_produk" required>
+                </p>
+
+                <p>
+                    <label for="kategori">Kategori</label>
+                    <input type="text" id="kategori" name="kategori" required>
+                </p>
+
+                <p>
+                    <label for="harga">Harga</label>
+                    <input type="number" id="harga" name="harga" required>
+                </p>
+
+                <p>
+                    <label for="stok">Stok</label>
+                    <input type="number" id="stok" name="stok" required>
+                </p>
+
+                <p>
+                    <button type="submit">Simpan</button>
+                </p>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 TOKO-Lite &mdash; Jobsheet Rombakan</p>
+    </footer>
+
+    <script src="../assets/js/app.js"></script>
+
+</body>
+
+</html>
