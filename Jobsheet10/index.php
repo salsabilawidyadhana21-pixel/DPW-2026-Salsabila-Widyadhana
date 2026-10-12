@@ -12,7 +12,7 @@ $totalAnggota = $pdo->query("SELECT COUNT(*) FROM anggota")->fetchColumn();
         </section>
 
         <section>
-            <h2>Ringkasan</h2>
+            <h2 style="grid-column: 1 / -1;">Ringkasan</h2>
             <article>
                 <h3>Total Buku</h3>
                 <p><?php echo $totalBuku; ?></p>
