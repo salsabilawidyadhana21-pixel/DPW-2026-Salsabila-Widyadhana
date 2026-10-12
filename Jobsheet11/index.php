@@ -1,9 +1,9 @@
 <?php
 $page_title = "Beranda";
 include __DIR__ . '/includes/header.php';
-require __DIR__ . '/includes/koneksi.php';
+require_once __DIR__ . '/includes/koneksi.php';
 
-$totalBuku = $pdo->query("SELECT COUNT(*) FROM buku")->fetchColumn();
+$totalBuku = $pdo->query("SELECT COUNT(*) FROM buku WHERE status IS NULL OR status = 'Aktif'")->fetchColumn();
 $totalAnggota = $pdo->query("SELECT COUNT(*) FROM anggota")->fetchColumn();
 ?>
         <section>
@@ -12,14 +12,14 @@ $totalAnggota = $pdo->query("SELECT COUNT(*) FROM anggota")->fetchColumn();
         </section>
 
         <section>
-            <h2>Ringkasan</h2>
+            <h2 style="grid-column: 1 / -1;">Ringkasan</h2>
             <article>
                 <h3>Total Buku</h3>
-                <p><?php echo $totalBuku; ?></p>
+                <p><?php echo htmlspecialchars($totalBuku, ENT_QUOTES, 'UTF-8'); ?></p>
             </article>
             <article>
                 <h3>Total Anggota</h3>
-                <p><?php echo $totalAnggota; ?></p>
+                <p><?php echo htmlspecialchars($totalAnggota, ENT_QUOTES, 'UTF-8'); ?></p>
             </article>
             <article>
                 <h3>Sedang Dipinjam</h3>
