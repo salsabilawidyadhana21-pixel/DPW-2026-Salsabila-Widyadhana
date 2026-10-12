@@ -1,6 +1,5 @@
 <?php
 require __DIR__ . '/../includes/auth.php';
-require __DIR__ . '/../includes/csrf.php';
 require __DIR__ . '/../includes/koneksi.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -8,7 +7,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-csrf_verify();
+if ($_SESSION['role'] !== 'admin') {
+    // Tendang kembali ke beranda/list jika bukan admin
+    header('Location: ../index.php');
+    exit;
+}
 
 $id = $_POST['id'] ?? null;
 if ($id) {

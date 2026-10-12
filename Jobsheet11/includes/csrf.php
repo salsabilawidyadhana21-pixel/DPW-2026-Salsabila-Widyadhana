@@ -1,7 +1,4 @@
 <?php
-// Proteksi CSRF (Cross-Site Request Forgery) dasar berbasis token per-session.
-// Membutuhkan session yang sudah dimulai (lihat header.php / auth.php).
-
 function csrf_token()
 {
     if (empty($_SESSION['csrf_token'])) {
