@@ -1,13 +1,12 @@
 <?php
+// Guard clause: di-include di baris paling atas setiap halaman yang
+// membutuhkan login (sebelum header.php mengeluarkan output apa pun),
+// agar header('Location: ...') masih bisa dipanggil.
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 if (!isset($_SESSION['user_id'])) {
-    $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Silakan login terlebih dahulu untuk mengakses halaman tersebut.'];
-    
-    // Menggunakan $base jika ada, atau path relatif
-    $redirect_url = isset($base) ? $base . 'auth/login.php' : '../auth/login.php';
-    header('Location: ' . $redirect_url);
+    header('Location: ../auth/login.php');
     exit;
 }
