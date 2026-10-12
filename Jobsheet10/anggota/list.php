@@ -1,217 +1,94 @@
 <?php
+require __DIR__ . '/../includes/auth.php';
+$page_title = "Daftar Anggota";
+include __DIR__ . '/../includes/header.php';
+require __DIR__ . '/../includes/koneksi.php';
 
-require_once '../includes/auth.php';
-require_role(['admin', 'petugas']);
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
 
-require_once '../includes/koneksi.php';
-
-$page_title = 'Data Anggota';
-
-require_once '../includes/header.php';
-
-$keyword = $_GET['keyword'] ?? '';
+$perPage = 5;
+$page = max(1, (int) ($_GET['page'] ?? 1));
+$offset = ($page - 1) * $perPage;
+$keyword = trim($_GET['q'] ?? '');
 
 if ($keyword !== '') {
+    $hitung = $pdo->prepare("SELECT COUNT(*) FROM anggota WHERE nama ILIKE :kw");
+    $hitung->execute(['kw' => '%' . $keyword . '%']);
+    $totalRows = $hitung->fetchColumn();
 
-    $sql = "
-        SELECT *
-        FROM anggota
-        WHERE nama ILIKE :keyword
-           OR no_anggota ILIKE :keyword
-           OR alamat ILIKE :keyword
-           OR no_hp ILIKE :keyword
-        ORDER BY id DESC
-    ";
-
-    $stmt = $pdo->prepare($sql);
-
-    $stmt->execute([
-        ':keyword' => '%' . $keyword . '%'
-    ]);
-
+    $stmt = $pdo->prepare("SELECT * FROM anggota WHERE nama ILIKE :kw ORDER BY id DESC LIMIT :limit OFFSET :offset");
+    $stmt->bindValue('kw', '%' . $keyword . '%');
 } else {
-
-    $sql = "
-        SELECT *
-        FROM anggota
-        ORDER BY id DESC
-    ";
-
-    $stmt = $pdo->query($sql);
+    $totalRows = $pdo->query("SELECT COUNT(*) FROM anggota")->fetchColumn();
+    $stmt = $pdo->prepare("SELECT * FROM anggota ORDER BY id DESC LIMIT :limit OFFSET :offset");
 }
+$stmt->bindValue('limit', $perPage, PDO::PARAM_INT);
+$stmt->bindValue('offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
 
-$anggota = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+$daftarAnggota = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$totalPages = max(1, (int) ceil($totalRows / $perPage));
 ?>
+        <section>
+            <h2>Daftar Anggota</h2>
 
-<section class="page-header">
+            <?php if ($flash): ?>
+                <p class="flash flash-<?php echo $flash['type']; ?>"><?php echo $flash['pesan']; ?></p>
+            <?php endif; ?>
 
-    <div>
+            <div class="search-box">
+                <form method="get" action="list.php">
+                    <span>
+                        <label for="search-input">Cari Nama Anggota</label><br>
+                        <input type="text" id="search-input" name="q" value="<?php echo $keyword; ?>" placeholder="Ketik nama anggota...">
+                    </span>
+                    <button type="submit">Cari</button>
+                </form>
+            </div>
 
-        <span class="section-label">
-            SIMPUS-Mini
-        </span>
-
-        <h1>
-            Data Anggota
-        </h1>
-
-        <p>
-            Kelola data anggota perpustakaan.
-        </p>
-
-    </div>
-
-    <a
-        href="tambah.php"
-        class="btn btn-primary">
-
-        + Tambah Anggota
-
-    </a>
-
-</section>
-
-
-<section class="content-card">
-
-    <form
-        method="GET"
-        class="search-box">
-
-        <input
-            type="text"
-            name="keyword"
-            placeholder="Cari anggota..."
-            value="<?= htmlspecialchars($keyword) ?>">
-
-        <button
-            type="submit"
-            class="btn btn-primary">
-
-            Cari
-
-        </button>
-
-        <?php if ($keyword !== ''): ?>
-
-            <a
-                href="list.php"
-                class="btn btn-secondary">
-
-                Reset
-
-            </a>
-
-        <?php endif; ?>
-
-    </form>
-
-
-    <div class="table-responsive">
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    <th>No</th>
-                    <th>Nama</th>
-                    <th>No. Anggota</th>
-                    <th>Alamat</th>
-                    <th>No. HP</th>
-                    <th>Aksi</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                <?php if (count($anggota) > 0): ?>
-
-                    <?php foreach ($anggota as $index => $data): ?>
-
-                        <tr>
-
-                            <td>
-                                <?= $index + 1 ?>
-                            </td>
-
-                            <td>
-                                <?= htmlspecialchars($data['nama']) ?>
-                            </td>
-
-                            <td>
-                                <?= htmlspecialchars($data['no_anggota']) ?>
-                            </td>
-
-                            <td>
-                                <?= htmlspecialchars($data['alamat'] ?? '-') ?>
-                            </td>
-
-                            <td>
-                                <?= htmlspecialchars($data['no_hp'] ?? '-') ?>
-                            </td>
-
-                            <td>
-
-                                <a
-                                    href="edit.php?id=<?= $data['id'] ?>"
-                                    class="btn btn-edit">
-
-                                    Edit
-
-                                </a>
-
-
-                                <?php if (($_SESSION['role'] ?? '') === 'admin'): ?>
-
-                                    <a
-                                        href="hapus.php?id=<?= $data['id'] ?>"
-                                        class="btn btn-hapus"
-                                        onclick="return confirm('Yakin ingin menghapus data anggota ini?');">
-
-                                        Hapus
-
-                                    </a>
-
-                                <?php endif; ?>
-
-                            </td>
-
-                        </tr>
-
-                    <?php endforeach; ?>
-
-                <?php else: ?>
-
+            <div class="table-responsive">
+            <table>
+                <thead>
                     <tr>
-
-                        <td
-                            colspan="6"
-                            style="text-align: center;">
-
-                            Data anggota tidak ditemukan.
-
-                        </td>
-
+                        <th>No. Anggota</th>
+                        <th>Nama</th>
+                        <th>Alamat</th>
+                        <th>No. HP</th>
+                        <th>Aksi</th>
                     </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($daftarAnggota)): ?>
+                    <tr>
+                        <td colspan="5">Tidak ada data anggota yang cocok.</td>
+                    </tr>
+                    <?php else: ?>
+                        <?php foreach ($daftarAnggota as $anggota): ?>
+                        <tr>
+                            <td><?php echo $anggota['no_anggota']; ?></td>
+                            <td><?php echo $anggota['nama']; ?></td>
+                            <td><?php echo $anggota['alamat']; ?></td>
+                            <td><?php echo $anggota['no_hp']; ?></td>
+                            <td>
+                                <a href="edit.php?id=<?php echo $anggota['id']; ?>" class="btn-edit">Edit</a>
+                                <form class="form-hapus" method="post" action="hapus.php">
+                                    <input type="hidden" name="id" value="<?php echo $anggota['id']; ?>">
+                                    <button type="submit" class="btn-hapus">Hapus</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+            </div>
 
-                <?php endif; ?>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</section>
-
-
-<?php
-
-require_once '../includes/footer.php';
-
-?>
+            <nav class="pagination">
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <a href="list.php?page=<?php echo $i; ?><?php echo $keyword !== '' ? '&q=' . urlencode($keyword) : ''; ?>"
+                   class="<?php echo $i === $page ? 'active' : ''; ?>"><?php echo $i; ?></a>
+                <?php endfor; ?>
+            </nav>
+        </section>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

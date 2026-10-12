@@ -1,173 +1,55 @@
 <?php
+require __DIR__ . '/../includes/auth.php';
+$page_title = "Edit Anggota";
+include __DIR__ . '/../includes/header.php';
+require __DIR__ . '/../includes/koneksi.php';
 
-require_once '../includes/auth.php';
-require_role(['admin', 'petugas']);
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
 
-require_once '../includes/koneksi.php';
-
-$page_title = 'Edit Anggota';
-
-// Pastikan ID tersedia
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+$id = $_GET['id'] ?? null;
+if (!$id) {
     header('Location: list.php');
     exit;
 }
 
-$id = (int) $_GET['id'];
-
-// Ambil data anggota berdasarkan ID
-$sql = "
-    SELECT *
-    FROM anggota
-    WHERE id = :id
-";
-
-$stmt = $pdo->prepare($sql);
-
-$stmt->execute([
-    ':id' => $id
-]);
-
+$stmt = $pdo->prepare("SELECT * FROM anggota WHERE id = :id");
+$stmt->execute(['id' => $id]);
 $anggota = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Jika data tidak ditemukan
 if (!$anggota) {
     header('Location: list.php');
     exit;
 }
-
-require_once '../includes/header.php';
-
 ?>
+        <section>
+            <h2>Edit Anggota</h2>
 
-<section class="page-header">
+            <?php if ($flash): ?>
+                <p class="flash flash-<?php echo $flash['type']; ?>"><?php echo $flash['pesan']; ?></p>
+            <?php endif; ?>
 
-    <div>
-
-        <span class="section-label">
-            Data Anggota
-        </span>
-
-        <h1>
-            Edit Anggota
-        </h1>
-
-        <p>
-            Ubah data anggota perpustakaan.
-        </p>
-
-    </div>
-
-    <a
-        href="list.php"
-        class="btn btn-secondary">
-
-        Kembali
-
-    </a>
-
-</section>
-
-
-<section class="content-card form-card">
-
-    <form
-        action="proses_edit.php"
-        method="POST">
-
-        <input
-            type="hidden"
-            name="id"
-            value="<?= $anggota['id'] ?>">
-
-
-        <div class="form-group">
-
-            <label for="nama">
-                Nama
-            </label>
-
-            <input
-                type="text"
-                id="nama"
-                name="nama"
-                value="<?= htmlspecialchars($anggota['nama']) ?>"
-                required>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="no_anggota">
-                No. Anggota
-            </label>
-
-            <input
-                type="text"
-                id="no_anggota"
-                name="no_anggota"
-                value="<?= htmlspecialchars($anggota['no_anggota']) ?>"
-                required>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="alamat">
-                Alamat
-            </label>
-
-            <textarea
-                id="alamat"
-                name="alamat"><?= htmlspecialchars($anggota['alamat'] ?? '') ?></textarea>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="no_hp">
-                No. HP
-            </label>
-
-            <input
-                type="text"
-                id="no_hp"
-                name="no_hp"
-                value="<?= htmlspecialchars($anggota['no_hp'] ?? '') ?>">
-
-        </div>
-
-
-        <div class="form-actions">
-
-            <a
-                href="list.php"
-                class="btn btn-secondary">
-
-                Batal
-
-            </a>
-
-            <button
-                type="submit"
-                class="btn btn-primary">
-
-                Simpan Perubahan
-
-            </button>
-
-        </div>
-
-    </form>
-
-</section>
-
-
-<?php
-
-require_once '../includes/footer.php';
-
-?>
+            <form id="form-tambah" method="post" action="proses_edit.php">
+                <input type="hidden" name="id" value="<?php echo $anggota['id']; ?>">
+                <p>
+                    <label for="nama">Nama</label><br>
+                    <input type="text" id="nama" name="nama" value="<?php echo $anggota['nama']; ?>" required>
+                </p>
+                <p>
+                    <label for="no_anggota">No. Anggota</label><br>
+                    <input type="text" id="no_anggota" name="no_anggota" value="<?php echo $anggota['no_anggota']; ?>" required>
+                </p>
+                <p>
+                    <label for="alamat">Alamat</label><br>
+                    <input type="text" id="alamat" name="alamat" value="<?php echo $anggota['alamat']; ?>">
+                </p>
+                <p>
+                    <label for="no_hp">No. HP</label><br>
+                    <input type="text" id="no_hp" name="no_hp" value="<?php echo $anggota['no_hp']; ?>">
+                </p>
+                <p>
+                    <button type="submit">Update</button>
+                </p>
+            </form>
+        </section>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

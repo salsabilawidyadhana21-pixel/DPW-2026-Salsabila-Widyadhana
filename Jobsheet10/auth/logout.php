@@ -1,27 +1,7 @@
 <?php
-
-// LOGOUT
-
-// Memulai session
-session_start();
-
-
-// =====================================================
-// Menghapus seluruh data session
-// =====================================================
-
-session_unset();
-
-
-// Menghancurkan session
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 session_destroy();
-
-
-// =====================================================
-// Setelah logout, user diarahkan kembali ke login
-// =====================================================
-
 header('Location: login.php');
 exit;
-
-?>

@@ -1,35 +1,12 @@
-<?php
+  </main>
 
-// Menentukan folder utama Jobsheet 10
-$base_path = '/Jobsheet10';
-
-?>
-
-</main>
-
-
-<!-- =====================================================
-     FOOTER
-     ===================================================== -->
-
-<footer>
-
-    <p>
-        &copy; <?= date('Y') ?> SIMPUS-Mini
-    </p>
-
-</footer>
-
-
-<!-- =====================================================
-     JAVASCRIPT
-     ===================================================== -->
-
-<script
-    src="<?= $base_path ?>/assets/js/app.js">
-</script>
-
-
+    <footer>
+        <p>&copy; 2026 SIMPUS-Mini &mdash; Jobsheet 10</p>
+    </footer>
+    <script src="<?php echo $base; ?>assets/js/app.js"></script>
+    <?php if (!empty($extra_scripts)): foreach ($extra_scripts as $src): ?>
+    <script src="<?php echo $src; ?>"></script>
+    <?php endforeach;
+    endif; ?>
 </body>
-
 </html>

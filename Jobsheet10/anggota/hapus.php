@@ -1,30 +1,18 @@
 <?php
+require __DIR__ . '/../includes/auth.php';
+require __DIR__ . '/../includes/koneksi.php';
 
-require_once '../includes/auth.php';
-
-// Tugas Mandiri:
-// Hanya admin yang memiliki akses hapus anggota.
-require_role('admin');
-
-require_once '../includes/koneksi.php';
-
-// Pastikan ID tersedia
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: list.php');
     exit;
 }
 
-$id = (int) $_GET['id'];
+$id = $_POST['id'] ?? null;
+if ($id) {
+    $stmt = $pdo->prepare("DELETE FROM anggota WHERE id = :id");
+    $stmt->execute(['id' => $id]);
+    $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Anggota berhasil dihapus.'];
+}
 
-// Hapus data anggota menggunakan prepared statement
-$sql = "DELETE FROM anggota WHERE id = :id";
-
-$stmt = $pdo->prepare($sql);
-
-$stmt->execute([
-    ':id' => $id
-]);
-
-// Kembali ke halaman daftar anggota
 header('Location: list.php');
 exit;

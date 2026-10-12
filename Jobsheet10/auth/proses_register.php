@@ -1,119 +1,47 @@
 <?php
-
-// PROSES REGISTER
-
-require_once '../includes/koneksi.php';
-
-session_start();
-
-
-// =====================================================
-// 1. Memastikan form dikirim menggunakan POST
-// =====================================================
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: register.php');
-    exit;
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
-
-
-// =====================================================
-// 2. Mengambil data dari form register
-// =====================================================
+require __DIR__ . '/../includes/koneksi.php';
 
 $nama = trim($_POST['nama'] ?? '');
 $username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
 
+$errors = [];
+if ($nama === '') {
+    $errors[] = "Nama wajib diisi.";
+}
+if ($username === '') {
+    $errors[] = "Username wajib diisi.";
+}
+if (strlen($password) < 6) {
+    $errors[] = "Password minimal 6 karakter.";
+}
 
-// =====================================================
-// 3. Validasi data
-// =====================================================
-
-if ($nama === '' || $username === '' || $password === '') {
-
-    $_SESSION['error'] = 'Semua data wajib diisi.';
-
+if (!empty($errors)) {
+    $_SESSION['flash'] = ['type' => 'error', 'pesan' => implode(' ', $errors)];
     header('Location: register.php');
     exit;
 }
 
-
-// =====================================================
-// 4. Mengecek apakah username sudah digunakan
-// =====================================================
+$cek = $pdo->prepare("SELECT id FROM users WHERE username = :username");
+$cek->execute(['username' => $username]);
+if ($cek->fetch()) {
+    $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Username sudah digunakan.'];
+    header('Location: register.php');
+    exit;
+}
 
 $stmt = $pdo->prepare(
-    "SELECT id
-     FROM users
-     WHERE username = :username"
+    "INSERT INTO users (nama, username, password, role) VALUES (:nama, :username, :password, 'petugas')"
 );
-
 $stmt->execute([
-    ':username' => $username
+    'nama' => $nama,
+    'username' => $username,
+    'password' => password_hash($password, PASSWORD_DEFAULT),
 ]);
 
-
-// Jika username sudah ada
-if ($stmt->fetch()) {
-
-    $_SESSION['error'] = 'Username sudah digunakan.';
-
-    header('Location: register.php');
-    exit;
-}
-
-
-// =====================================================
-// 5. Mengamankan password
-// Password tidak disimpan dalam bentuk asli
-// =====================================================
-
-$passwordHash = password_hash(
-    $password,
-    PASSWORD_DEFAULT
-);
-
-
-// =====================================================
-// 6. Menyimpan data user ke database
-// =====================================================
-
-try {
-
-    $stmt = $pdo->prepare(
-        "INSERT INTO users
-        (nama, username, password, role)
-        VALUES
-        (:nama, :username, :password, :role)"
-    );
-
-    $stmt->execute([
-        ':nama' => $nama,
-        ':username' => $username,
-        ':password' => $passwordHash,
-        ':role' => 'petugas'
-    ]);
-
-
-    // Menyimpan pesan berhasil
-    $_SESSION['success'] =
-        'Registrasi berhasil. Silakan login.';
-
-
-    // Kembali ke halaman login
-    header('Location: login.php');
-    exit;
-
-
-} catch (PDOException $e) {
-
-    // Jika proses INSERT gagal
-    $_SESSION['error'] =
-        'Registrasi gagal. Silakan coba lagi.';
-
-    header('Location: register.php');
-    exit;
-}
-
-?>
+$_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Registrasi berhasil, silakan login.'];
+header('Location: login.php');
+exit;

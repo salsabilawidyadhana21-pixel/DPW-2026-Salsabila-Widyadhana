@@ -1,120 +1,54 @@
 <?php
+require __DIR__ . '/../includes/auth.php';
+require __DIR__ . '/../includes/koneksi.php';
 
-// Memastikan user sudah login
-require_once '../includes/auth.php';
-
-
-// =====================================================
-// Hanya admin dan petugas yang boleh mengubah buku
-// =====================================================
-
-require_role(['admin', 'petugas']);
-
-
-// Memanggil koneksi database
-require_once '../includes/koneksi.php';
-
-
-// =====================================================
-// 1. Memastikan form dikirim menggunakan POST
-// =====================================================
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-
-    header('Location: list.php');
-    exit;
-}
-
-
-// =====================================================
-// 2. Mengambil data dari form
-// =====================================================
-
-$id = $_POST['id'] ?? '';
-
+$id = $_POST['id'] ?? null;
 $judul = trim($_POST['judul'] ?? '');
-
 $pengarang = trim($_POST['pengarang'] ?? '');
-
 $tahun = $_POST['tahun'] ?? '';
-
 $isbn = trim($_POST['isbn'] ?? '');
-
-$stok = $_POST['stok'] ?? 0;
-
+$stok = $_POST['stok'] ?? '';
 $kategori = trim($_POST['kategori'] ?? '');
 
-
-// =====================================================
-// 3. Validasi data
-// =====================================================
-
-if (
-    $id === '' ||
-    $judul === '' ||
-    $pengarang === '' ||
-    $tahun === ''
-) {
-
-    die(
-        'ID, judul, pengarang, dan tahun wajib diisi.'
-    );
-}
-
-
-// =====================================================
-// 4. Mengubah data buku
-// Menggunakan prepared statement
-// =====================================================
-
-try {
-
-    $stmt = $pdo->prepare(
-        "UPDATE buku
-         SET
-            judul = :judul,
-            pengarang = :pengarang,
-            tahun = :tahun,
-            isbn = :isbn,
-            stok = :stok,
-            kategori = :kategori
-         WHERE id = :id"
-    );
-
-
-    $stmt->execute([
-
-        ':judul' => $judul,
-
-        ':pengarang' => $pengarang,
-
-        ':tahun' => $tahun,
-
-        ':isbn' => $isbn !== '' ? $isbn : null,
-
-        ':stok' => $stok,
-
-        ':kategori' => $kategori !== '' ? $kategori : null,
-
-        ':id' => $id
-
-    ]);
-
-
-    // Setelah berhasil diubah,
-    // kembali ke daftar buku
+if (!$id) {
     header('Location: list.php');
     exit;
-
-
-} catch (PDOException $e) {
-
-    // Jika proses UPDATE gagal
-    die(
-        'Gagal mengubah data buku: ' .
-        $e->getMessage()
-    );
-
 }
 
-?>
+$errors = [];
+if ($judul === '') {
+    $errors[] = "Judul wajib diisi.";
+}
+if ($pengarang === '') {
+    $errors[] = "Pengarang wajib diisi.";
+}
+if (!is_numeric($tahun) || $tahun < 1900 || $tahun > 2026) {
+    $errors[] = "Tahun harus di antara 1900-2026.";
+}
+if (!is_numeric($stok) || $stok < 0) {
+    $errors[] = "Stok tidak boleh negatif.";
+}
+
+if (!empty($errors)) {
+    $_SESSION['flash'] = ['type' => 'error', 'pesan' => implode(' ', $errors)];
+    header('Location: edit.php?id=' . urlencode($id));
+    exit;
+}
+
+$stmt = $pdo->prepare(
+    "UPDATE buku SET judul = :judul, pengarang = :pengarang, tahun = :tahun,
+     isbn = :isbn, stok = :stok, kategori = :kategori WHERE id = :id"
+);
+$stmt->execute([
+    'judul' => $judul,
+    'pengarang' => $pengarang,
+    'tahun' => (int) $tahun,
+    'isbn' => $isbn,
+    'stok' => (int) $stok,
+    'kategori' => $kategori,
+    'id' => $id,
+]);
+
+$_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Buku berhasil diperbarui.'];
+header('Location: list.php');
+exit;

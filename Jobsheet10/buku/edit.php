@@ -1,255 +1,67 @@
 <?php
+require __DIR__ . '/../includes/auth.php';
+$page_title = "Edit Buku";
+include __DIR__ . '/../includes/header.php';
+require __DIR__ . '/../includes/koneksi.php';
 
-// Memastikan user sudah login
-require_once '../includes/auth.php';
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
 
-
-// =====================================================
-// Hanya admin dan petugas yang boleh mengedit buku
-// =====================================================
-
-require_role(['admin', 'petugas']);
-
-
-// Memanggil koneksi database
-require_once '../includes/koneksi.php';
-
-
-// =====================================================
-// 1. Mengambil ID dari URL
-// =====================================================
-
-$id = $_GET['id'] ?? '';
-
-
-// Jika ID tidak tersedia
-if ($id === '') {
-
+$id = $_GET['id'] ?? null;
+if (!$id) {
     header('Location: list.php');
     exit;
 }
 
-
-// =====================================================
-// 2. Mengambil data buku berdasarkan ID
-// =====================================================
-
-$stmt = $pdo->prepare(
-    "SELECT *
-     FROM buku
-     WHERE id = :id"
-);
-
-$stmt->execute([
-    ':id' => $id
-]);
-
+$stmt = $pdo->prepare("SELECT * FROM buku WHERE id = :id");
+$stmt->execute(['id' => $id]);
 $buku = $stmt->fetch(PDO::FETCH_ASSOC);
 
-
-// Jika data buku tidak ditemukan
 if (!$buku) {
-
-    die('Data buku tidak ditemukan.');
-
+    header('Location: list.php');
+    exit;
 }
-
-
-// Judul halaman
-$page_title = 'Edit Buku';
-
-
-// Memanggil header
-require_once '../includes/header.php';
-
 ?>
-
-
-<section class="page-header">
-
-    <div>
-
-        <span class="section-label">
-            Data Buku
-        </span>
-
-        <h1>
-            Edit Buku
-        </h1>
-
-        <p>
-            Ubah data buku yang sudah tersimpan.
-        </p>
-
-    </div>
-
-
-    <!-- Kembali ke daftar buku -->
-    <a
-        href="list.php"
-        class="btn btn-secondary">
-
-        Kembali
-
-    </a>
-
-</section>
-
-
-<section class="content-card form-card">
-
-    <!--
-        Form mengirim data ke
-        proses_edit.php menggunakan method POST
-    -->
-
-    <form
-        action="proses_edit.php"
-        method="POST">
-
-
-        <!--
-            ID disimpan sebagai hidden input
-            agar proses_edit.php mengetahui
-            data mana yang akan diubah
-        -->
-
-        <input
-            type="hidden"
-            name="id"
-            value="<?= htmlspecialchars($buku['id']) ?>">
-
-
-        <!-- Input judul -->
-        <div class="form-group">
-
-            <label for="judul">
-                Judul
-            </label>
-
-            <input
-                type="text"
-                id="judul"
-                name="judul"
-                value="<?= htmlspecialchars($buku['judul']) ?>"
-                required>
-
-        </div>
-
-
-        <!-- Input pengarang -->
-        <div class="form-group">
-
-            <label for="pengarang">
-                Pengarang
-            </label>
-
-            <input
-                type="text"
-                id="pengarang"
-                name="pengarang"
-                value="<?= htmlspecialchars($buku['pengarang']) ?>"
-                required>
-
-        </div>
-
-
-        <!-- Input tahun -->
-        <div class="form-group">
-
-            <label for="tahun">
-                Tahun
-            </label>
-
-            <input
-                type="number"
-                id="tahun"
-                name="tahun"
-                value="<?= htmlspecialchars($buku['tahun']) ?>"
-                required>
-
-        </div>
-
-
-        <!-- Input ISBN -->
-        <div class="form-group">
-
-            <label for="isbn">
-                ISBN
-            </label>
-
-            <input
-                type="text"
-                id="isbn"
-                name="isbn"
-                value="<?= htmlspecialchars($buku['isbn'] ?? '') ?>">
-
-        </div>
-
-
-        <!-- Input stok -->
-        <div class="form-group">
-
-            <label for="stok">
-                Stok
-            </label>
-
-            <input
-                type="number"
-                id="stok"
-                name="stok"
-                value="<?= htmlspecialchars($buku['stok']) ?>"
-                min="0"
-                required>
-
-        </div>
-
-
-        <!-- Input kategori -->
-        <div class="form-group">
-
-            <label for="kategori">
-                Kategori
-            </label>
-
-            <input
-                type="text"
-                id="kategori"
-                name="kategori"
-                value="<?= htmlspecialchars($buku['kategori'] ?? '') ?>">
-
-        </div>
-
-
-        <!-- Tombol form -->
-        <div class="form-actions">
-
-            <a
-                href="list.php"
-                class="btn btn-secondary">
-
-                Batal
-
-            </a>
-
-            <button
-                type="submit"
-                class="btn btn-primary">
-
-                Simpan Perubahan
-
-            </button>
-
-        </div>
-
-    </form>
-
-</section>
-
-
-<?php
-
-// Memanggil footer
-require_once '../includes/footer.php';
-
-?>
+        <section>
+            <h2>Edit Buku</h2>
+
+            <?php if ($flash): ?>
+                <p class="flash flash-<?php echo $flash['type']; ?>"><?php echo $flash['pesan']; ?></p>
+            <?php endif; ?>
+
+            <form id="form-tambah" method="post" action="proses_edit.php">
+                <input type="hidden" name="id" value="<?php echo $buku['id']; ?>">
+                <p>
+                    <label for="judul">Judul</label><br>
+                    <input type="text" id="judul" name="judul" value="<?php echo $buku['judul']; ?>" required>
+                </p>
+                <p>
+                    <label for="pengarang">Pengarang</label><br>
+                    <input type="text" id="pengarang" name="pengarang" value="<?php echo $buku['pengarang']; ?>" required>
+                </p>
+                <p>
+                    <label for="tahun">Tahun Terbit</label><br>
+                    <input type="number" id="tahun" name="tahun" min="1900" max="2026" value="<?php echo $buku['tahun']; ?>" required>
+                </p>
+                <p>
+                    <label for="isbn">ISBN</label><br>
+                    <input type="text" id="isbn" name="isbn" value="<?php echo $buku['isbn']; ?>">
+                </p>
+                <p>
+                    <label for="stok">Stok</label><br>
+                    <input type="number" id="stok" name="stok" min="0" value="<?php echo $buku['stok']; ?>" required>
+                </p>
+                <p>
+                    <label for="kategori">Kategori</label><br>
+                    <select id="kategori" name="kategori">
+                        <?php foreach (['fiksi' => 'Fiksi', 'non-fiksi' => 'Non-Fiksi', 'referensi' => 'Referensi'] as $value => $label): ?>
+                        <option value="<?php echo $value; ?>" <?php echo $buku['kategori'] === $value ? 'selected' : ''; ?>><?php echo $label; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </p>
+                <p>
+                    <button type="submit">Update</button>
+                </p>
+            </form>
+        </section>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

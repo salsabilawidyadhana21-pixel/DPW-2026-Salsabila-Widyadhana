@@ -1,152 +1,42 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (isset($_SESSION['user_id'])) {
+    header('Location: ../index.php');
+    exit;
+}
 
-$page_title = 'Register';
+$page_title = "Registrasi Petugas";
+include __DIR__ . '/../includes/header.php';
 
-// Mengambil header website
-require_once '../includes/header.php';
-
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
 ?>
+        <section>
+            <h2>Registrasi Petugas</h2>
 
-<section class="page-header">
+            <?php if ($flash): ?>
+                <p class="flash flash-<?php echo $flash['type']; ?>"><?php echo $flash['pesan']; ?></p>
+            <?php endif; ?>
 
-    <div>
-
-        <span class="section-label">
-            Autentikasi
-        </span>
-
-        <h1>
-            Register
-        </h1>
-
-        <p>
-            Buat akun baru untuk mengakses SIMPUS-Mini.
-        </p>
-
-    </div>
-
-    <!-- Tombol menuju halaman login -->
-    <a
-        href="login.php"
-        class="btn btn-secondary">
-
-        Login
-
-    </a>
-
-</section>
-
-
-<section class="content-card form-card">
-
-    <!--
-        Form register mengirim data ke
-        proses_register.php menggunakan POST
-    -->
-
-    <form
-        action="proses_register.php"
-        method="POST"
-        id="form-register">
-
-
-        <!-- Input nama -->
-        <div class="form-group">
-
-            <label for="nama">
-                Nama
-            </label>
-
-            <input
-                type="text"
-                id="nama"
-                name="nama"
-                placeholder="Masukkan nama"
-                required>
-
-        </div>
-
-
-        <!-- Input username -->
-        <div class="form-group">
-
-            <label for="username">
-                Username
-            </label>
-
-            <input
-                type="text"
-                id="username"
-                name="username"
-                placeholder="Masukkan username"
-                required>
-
-        </div>
-
-
-        <!-- Input password -->
-        <div class="form-group">
-
-            <label for="password">
-                Password
-            </label>
-
-            <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Masukkan password"
-                required>
-
-        </div>
-
-
-        <!-- Konfirmasi password -->
-        <div class="form-group">
-
-            <label for="password_confirm">
-                Konfirmasi Password
-            </label>
-
-            <input
-                type="password"
-                id="password_confirm"
-                name="password_confirm"
-                placeholder="Ulangi password"
-                required>
-
-        </div>
-
-
-        <!-- Tombol form -->
-        <div class="form-actions">
-
-            <a
-                href="../index.php"
-                class="btn btn-secondary">
-
-                Batal
-
-            </a>
-
-            <button
-                type="submit"
-                class="btn btn-primary">
-
-                Register
-
-            </button>
-
-        </div>
-
-    </form>
-
-</section>
-
-
-<?php
-
-// Mengambil footer website
-require_once '../includes/footer.php';
-
-?>
+            <form method="post" action="proses_register.php">
+                <p>
+                    <label for="nama">Nama</label><br>
+                    <input type="text" id="nama" name="nama" required>
+                </p>
+                <p>
+                    <label for="username">Username</label><br>
+                    <input type="text" id="username" name="username" required>
+                </p>
+                <p>
+                    <label for="password">Password</label><br>
+                    <input type="password" id="password" name="password" required minlength="6">
+                </p>
+                <p>
+                    <button type="submit">Daftar</button>
+                </p>
+            </form>
+            <p>Sudah punya akun? <a href="login.php">Login di sini</a></p>
+        </section>
+<?php include __DIR__ . '/../includes/footer.php'; ?>
