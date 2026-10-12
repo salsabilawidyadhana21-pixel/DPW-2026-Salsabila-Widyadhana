@@ -2,37 +2,29 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once __DIR__ . '/../includes/koneksi.php';
+require __DIR__ . '/../includes/csrf.php';
+require __DIR__ . '/../includes/koneksi.php';
+
+csrf_verify();
 
 $username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
 
-if ($username === '' || $password === '') {
-    $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Username dan password wajib diisi.'];
-    header('Location: login.php');
-    exit;
-}
-
-// Prepared Statement PDO (Mencegah SQL Injection)
 $stmt = $pdo->prepare("SELECT * FROM users WHERE username = :username");
 $stmt->execute(['username' => $username]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if ($user && password_verify($password, $user['password'])) {
-    // TUGAS MANDIRI: Mencegah Session Fixation
+    // Regenerasi session ID setelah login berhasil untuk mencegah session fixation.
     session_regenerate_id(true);
 
-    $_SESSION['user_id']  = $user['id'];
-    $_SESSION['nama']     = $user['nama'];
-    $_SESSION['username'] = $user['username'];
-    $_SESSION['role']     = $user['role'];
-
-    $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Selamat datang kembali, ' . htmlspecialchars($user['nama'], ENT_QUOTES, 'UTF-8') . '!'];
+    $_SESSION['user_id'] = $user['id'];
+    $_SESSION['nama'] = $user['nama'];
+    $_SESSION['role'] = $user['role'];
     header('Location: ../index.php');
     exit;
-} else {
-    $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Username atau password salah.'];
-    header('Location: login.php');
-    exit;
 }
-?>
+
+$_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Username atau password salah.'];
+header('Location: login.php');
+exit;

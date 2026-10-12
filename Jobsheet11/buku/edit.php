@@ -1,14 +1,13 @@
 <?php
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/csrf.php';
+require __DIR__ . '/../includes/auth.php';
 $page_title = "Edit Buku";
 include __DIR__ . '/../includes/header.php';
-require_once __DIR__ . '/../includes/koneksi.php';
+require __DIR__ . '/../includes/koneksi.php';
 
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
-$id = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT);
+$id = $_GET['id'] ?? null;
 if (!$id) {
     header('Location: list.php');
     exit;
@@ -23,44 +22,47 @@ if (!$buku) {
     exit;
 }
 ?>
-<section>
-    <h2>Edit Buku</h2>
+        <section>
+            <h2>Edit Buku</h2>
 
-    <?php if ($flash): ?>
-        <p class="flash flash-<?php echo htmlspecialchars($flash['type'], ENT_QUOTES, 'UTF-8'); ?>">
-            <?php echo htmlspecialchars($flash['pesan'], ENT_QUOTES, 'UTF-8'); ?>
-        </p>
-    <?php endif; ?>
+            <?php if ($flash): ?>
+                <p class="flash flash-<?php echo $flash['type']; ?>"><?php echo $flash['pesan']; ?></p>
+            <?php endif; ?>
 
-    <form id="form-tambah" method="post" action="proses_edit.php">
-        <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
-        <input type="hidden" name="id" value="<?php echo (int)$buku['id']; ?>">
-
-        <p>
-            <label for="judul">Judul</label><br>
-            <input type="text" id="judul" name="judul" value="<?php echo htmlspecialchars($buku['judul'], ENT_QUOTES, 'UTF-8'); ?>" required>
-        </p>
-        <p>
-            <label for="pengarang">Pengarang</label><br>
-            <input type="text" id="pengarang" name="pengarang" value="<?php echo htmlspecialchars($buku['pengarang'], ENT_QUOTES, 'UTF-8'); ?>" required>
-        </p>
-        <p>
-            <label for="tahun">Tahun</label><br>
-            <input type="number" id="tahun" name="tahun" value="<?php echo htmlspecialchars($buku['tahun'], ENT_QUOTES, 'UTF-8'); ?>" required>
-        </p>
-        <p>
-            <label for="isbn">ISBN</label><br>
-            <input type="text" id="isbn" name="isbn" value="<?php echo htmlspecialchars($buku['isbn'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-        </p>
-        <p>
-            <label for="stok">Stok</label><br>
-            <input type="number" id="stok" name="stok" value="<?php echo htmlspecialchars($buku['stok'], ENT_QUOTES, 'UTF-8'); ?>" required>
-        </p>
-        <p>
-            <label for="kategori">Kategori</label><br>
-            <input type="text" id="kategori" name="kategori" value="<?php echo htmlspecialchars($buku['kategori'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-        </p>
-        <button type="submit">Simpan Perubahan</button>
-    </form>
-</section>
+            <form id="form-tambah" method="post" action="proses_edit.php">
+                <?php echo csrf_field(); ?>
+                <input type="hidden" name="id" value="<?php echo (int) $buku['id']; ?>">
+                <p>
+                    <label for="judul">Judul</label><br>
+                    <input type="text" id="judul" name="judul" value="<?php echo e($buku['judul']); ?>" required>
+                </p>
+                <p>
+                    <label for="pengarang">Pengarang</label><br>
+                    <input type="text" id="pengarang" name="pengarang" value="<?php echo e($buku['pengarang']); ?>" required>
+                </p>
+                <p>
+                    <label for="tahun">Tahun Terbit</label><br>
+                    <input type="number" id="tahun" name="tahun" min="1900" max="2026" value="<?php echo $buku['tahun']; ?>" required>
+                </p>
+                <p>
+                    <label for="isbn">ISBN</label><br>
+                    <input type="text" id="isbn" name="isbn" value="<?php echo e($buku['isbn']); ?>">
+                </p>
+                <p>
+                    <label for="stok">Stok</label><br>
+                    <input type="number" id="stok" name="stok" min="0" value="<?php echo $buku['stok']; ?>" required>
+                </p>
+                <p>
+                    <label for="kategori">Kategori</label><br>
+                    <select id="kategori" name="kategori">
+                        <?php foreach (['fiksi' => 'Fiksi', 'non-fiksi' => 'Non-Fiksi', 'referensi' => 'Referensi'] as $value => $label): ?>
+                        <option value="<?php echo $value; ?>" <?php echo $buku['kategori'] === $value ? 'selected' : ''; ?>><?php echo $label; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </p>
+                <p>
+                    <button type="submit">Update</button>
+                </p>
+            </form>
+        </section>
 <?php include __DIR__ . '/../includes/footer.php'; ?>

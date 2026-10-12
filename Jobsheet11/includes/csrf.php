@@ -1,27 +1,25 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+// Proteksi CSRF (Cross-Site Request Forgery) dasar berbasis token per-session.
+// Membutuhkan session yang sudah dimulai (lihat header.php / auth.php).
 
-/**
- * Membuat atau mengambil CSRF token dari session
- */
-function generate_csrf_token(): string {
+function csrf_token()
+{
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
     return $_SESSION['csrf_token'];
 }
 
-/**
- * Memverifikasi CSRF token dari request POST
- */
-function verify_csrf_token(?string $token): void {
-    if (empty($_SESSION['csrf_token']) || empty($token) || !hash_equals($_SESSION['csrf_token'], $token)) {
+function csrf_field()
+{
+    return '<input type="hidden" name="csrf_token" value="' . csrf_token() . '">';
+}
+
+function csrf_verify()
+{
+    $token = $_POST['csrf_token'] ?? '';
+    if ($token === '' || !hash_equals($_SESSION['csrf_token'] ?? '', $token)) {
         http_response_code(403);
-        $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Permintaan ditolak: CSRF Token tidak valid!'];
-        header("Location: " . ($_SERVER['HTTP_REFERER'] ?? '../index.php'));
-        exit;
+        die('Permintaan ditolak: token CSRF tidak valid atau kedaluwarsa.');
     }
 }
-?>

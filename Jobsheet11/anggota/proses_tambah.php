@@ -1,19 +1,14 @@
 <?php
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/koneksi.php';
-require_once __DIR__ . '/../includes/csrf.php';
+require __DIR__ . '/../includes/auth.php';
+require __DIR__ . '/../includes/csrf.php';
+require __DIR__ . '/../includes/koneksi.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: list.php');
-    exit;
-}
+csrf_verify();
 
-verify_csrf_token($_POST['csrf_token'] ?? null);
-
-$nama      = trim(filter_var($_POST['nama'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-$noAnggota = trim(filter_var($_POST['no_anggota'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-$alamat    = trim(filter_var($_POST['alamat'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-$noHp      = trim(filter_var($_POST['no_hp'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+$nama = trim($_POST['nama'] ?? '');
+$noAnggota = trim($_POST['no_anggota'] ?? '');
+$alamat = trim($_POST['alamat'] ?? '');
+$noHp = trim($_POST['no_hp'] ?? '');
 
 $errors = [];
 if ($nama === '') {
@@ -29,15 +24,18 @@ if (!empty($errors)) {
     exit;
 }
 
-$stmt = $pdo->prepare("INSERT INTO anggota (nama, no_anggota, alamat, no_hp) VALUES (:nama, :no_anggota, :alamat, :no_hp)");
+$stmt = $pdo->prepare(
+    "INSERT INTO anggota (nama, no_anggota, alamat, no_hp)
+     VALUES (:nama, :no_anggota, :alamat, :no_hp)
+     RETURNING id"
+);
 $stmt->execute([
-    'nama'       => $nama,
+    'nama' => $nama,
     'no_anggota' => $noAnggota,
-    'alamat'     => $alamat,
-    'no_hp'      => $noHp
+    'alamat' => $alamat,
+    'no_hp' => $noHp,
 ]);
 
 $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Anggota berhasil ditambahkan.'];
 header('Location: list.php');
 exit;
-?>

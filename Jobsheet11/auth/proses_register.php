@@ -2,16 +2,14 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once __DIR__ . '/../includes/koneksi.php';
+require __DIR__ . '/../includes/csrf.php';
+require __DIR__ . '/../includes/koneksi.php';
 
-$nama     = trim(filter_var($_POST['nama'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-$username = trim(filter_var($_POST['username'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+csrf_verify();
+
+$nama = trim($_POST['nama'] ?? '');
+$username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
-$role     = trim($_POST['role'] ?? 'petugas');
-
-if (!in_array($role, ['admin', 'petugas'], true)) {
-    $role = 'petugas';
-}
 
 $errors = [];
 if ($nama === '') {
@@ -30,25 +28,23 @@ if (!empty($errors)) {
     exit;
 }
 
-$stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE username = :username");
-$stmt->execute(['username' => $username]);
-if ($stmt->fetchColumn() > 0) {
+$cek = $pdo->prepare("SELECT id FROM users WHERE username = :username");
+$cek->execute(['username' => $username]);
+if ($cek->fetch()) {
     $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Username sudah digunakan.'];
     header('Location: register.php');
     exit;
 }
 
-$hashPassword = password_hash($password, PASSWORD_DEFAULT);
-
-$stmt = $pdo->prepare("INSERT INTO users (nama, username, password, role) VALUES (:nama, :username, :password, :role)");
+$stmt = $pdo->prepare(
+    "INSERT INTO users (nama, username, password, role) VALUES (:nama, :username, :password, 'petugas')"
+);
 $stmt->execute([
-    'nama'     => $nama,
+    'nama' => $nama,
     'username' => $username,
-    'password' => $hashPassword,
-    'role'     => $role
+    'password' => password_hash($password, PASSWORD_DEFAULT),
 ]);
 
-$_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Registrasi berhasil. Silakan login.'];
+$_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Registrasi berhasil, silakan login.'];
 header('Location: login.php');
 exit;
-?>

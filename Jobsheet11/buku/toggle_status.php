@@ -1,19 +1,27 @@
 <?php
-require_once __DIR__ . '/../includes/auth.php';
+session_start();
+// menyesuaikan dengan file koneksi database
 require_once __DIR__ . '/../includes/koneksi.php';
 
-$id = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT);
-$status = ($_GET['status'] ?? '') === 'Nonaktif' ? 'Nonaktif' : 'Aktif';
+if (isset($_GET['id']) && isset($_GET['status'])) {
+    $id = intval($_GET['id']);
+    $status_baru = $_GET['status'] === 'Nonaktif' ? 'Nonaktif' : 'Aktif';
 
-if ($id) {
-    $stmt = $pdo->prepare("UPDATE buku SET status = :status WHERE id = :id");
-    $stmt->execute([
-        'status' => $status,
-        'id'     => $id
-    ]);
-    $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Status buku berhasil diperbarui.'];
+    try {
+        // menggunakan PDO
+        $stmt = $pdo->prepare("UPDATE buku SET status = :status WHERE id = :id");
+        $stmt->execute([
+            ':status' => $status_baru,
+            ':id' => $id
+        ]);
+        
+        header("Location: list.php?pesan=status_berhasil");
+        exit;
+    } catch (PDOException $e) {
+        echo "Gagal mengubah status: " . $e->getMessage();
+    }
+} else {
+    header("Location: list.php");
+    exit;
 }
-
-header('Location: list.php');
-exit;
 ?>

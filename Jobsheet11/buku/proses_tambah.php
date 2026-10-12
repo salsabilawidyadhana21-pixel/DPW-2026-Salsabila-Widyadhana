@@ -1,22 +1,19 @@
 <?php
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/koneksi.php';
-require_once __DIR__ . '/../includes/csrf.php';
+require __DIR__ . '/../includes/auth.php';
+require __DIR__ . '/../includes/csrf.php';
+require __DIR__ . '/../includes/koneksi.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: list.php');
-    exit;
-}
+csrf_verify();
 
-verify_csrf_token($_POST['csrf_token'] ?? null);
+$judul = trim($_POST['judul'] ?? '');
+$pengarang = trim($_POST['pengarang'] ?? '');
+$tahun = $_POST['tahun'] ?? '';
+$isbn = trim($_POST['isbn'] ?? '');
+$stok = $_POST['stok'] ?? '';
+$kategori = trim($_POST['kategori'] ?? '');
 
-$judul     = trim(filter_var($_POST['judul'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-$pengarang = trim(filter_var($_POST['pengarang'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-$tahun     = filter_var($_POST['tahun'] ?? '', FILTER_VALIDATE_INT);
-$isbn      = trim(filter_var($_POST['isbn'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-$stok       = filter_var($_POST['stok'] ?? '', FILTER_VALIDATE_INT);
-$kategori  = trim(filter_var($_POST['kategori'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-
+// Validasi server-side — wajib ada meski sudah divalidasi JS di Jobsheet 5,
+// karena validasi client bisa dilewati (nonaktifkan JS / kirim request manual).
 $errors = [];
 if ($judul === '') {
     $errors[] = "Judul wajib diisi.";
@@ -24,11 +21,11 @@ if ($judul === '') {
 if ($pengarang === '') {
     $errors[] = "Pengarang wajib diisi.";
 }
-if ($tahun === false || $tahun < 1900 || $tahun > (int)date('Y') + 1) {
-    $errors[] = "Tahun tidak valid.";
+if (!is_numeric($tahun) || $tahun < 1900 || $tahun > 2026) {
+    $errors[] = "Tahun harus di antara 1900-2026.";
 }
-if ($stok === false || $stok < 0) {
-    $errors[] = "Stok harus berupa angka non-negatif.";
+if (!is_numeric($stok) || $stok < 0) {
+    $errors[] = "Stok tidak boleh negatif.";
 }
 
 if (!empty($errors)) {
@@ -37,17 +34,20 @@ if (!empty($errors)) {
     exit;
 }
 
-$stmt = $pdo->prepare("INSERT INTO buku (judul, pengarang, tahun, isbn, stok, kategori, status) VALUES (:judul, :pengarang, :tahun, :isbn, :stok, :kategori, 'Aktif')");
+$stmt = $pdo->prepare(
+    "INSERT INTO buku (judul, pengarang, tahun, isbn, stok, kategori)
+     VALUES (:judul, :pengarang, :tahun, :isbn, :stok, :kategori)
+     RETURNING id"
+);
 $stmt->execute([
-    'judul'     => $judul,
+    'judul' => $judul,
     'pengarang' => $pengarang,
-    'tahun'     => $tahun,
-    'isbn'      => $isbn,
-    'stok'      => $stok,
-    'kategori'  => $kategori
+    'tahun' => (int) $tahun,
+    'isbn' => $isbn,
+    'stok' => (int) $stok,
+    'kategori' => $kategori,
 ]);
 
 $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Buku berhasil ditambahkan.'];
 header('Location: list.php');
 exit;
-?>
