@@ -13,11 +13,11 @@ $offset = ($page - 1) * $perPage;
 $keyword = trim($_GET['q'] ?? '');
 
 if ($keyword !== '') {
-    $hitung = $pdo->prepare("SELECT COUNT(*) FROM anggota WHERE nama ILIKE :kw OR nim ILIKE :kw");
+    $hitung = $pdo->prepare("SELECT COUNT(*) FROM anggota WHERE nama ILIKE :kw");
     $hitung->execute(['kw' => '%' . $keyword . '%']);
     $totalRows = $hitung->fetchColumn();
 
-    $stmt = $pdo->prepare("SELECT * FROM anggota WHERE nama ILIKE :kw OR nim ILIKE :kw ORDER BY id DESC LIMIT :limit OFFSET :offset");
+    $stmt = $pdo->prepare("SELECT * FROM anggota WHERE nama ILIKE :kw ORDER BY id DESC LIMIT :limit OFFSET :offset");
     $stmt->bindValue('kw', '%' . $keyword . '%');
 } else {
     $totalRows = $pdo->query("SELECT COUNT(*) FROM anggota")->fetchColumn();
@@ -42,8 +42,8 @@ $totalPages = max(1, (int) ceil($totalRows / $perPage));
     <div class="search-box">
         <form method="get" action="list.php">
             <span>
-                <label for="search-input">Cari Nama / NIM</label><br>
-                <input type="text" id="search-input" name="q" value="<?php echo htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Ketik nama atau NIM...">
+                <label for="search-input">Cari Nama</label><br>
+                <input type="text" id="search-input" name="q" value="<?php echo htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Ketik nama anggota...">
             </span>
             <button type="submit">Cari</button>
         </form>
@@ -53,9 +53,9 @@ $totalPages = max(1, (int) ceil($totalRows / $perPage));
     <table>
         <thead>
             <tr>
-                <th>NIM</th>
+                <th>NIM / No Anggota</th>
                 <th>Nama</th>
-                <th>Email</th>
+                <th>Email / Kontak</th>
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -67,9 +67,9 @@ $totalPages = max(1, (int) ceil($totalRows / $perPage));
             <?php else: ?>
                 <?php foreach ($daftarAnggota as $anggota): ?>
                 <tr>
-                    <td><?php echo htmlspecialchars($anggota['nim'], ENT_QUOTES, 'UTF-8'); ?></td>
-                    <td><?php echo htmlspecialchars($anggota['nama'], ENT_QUOTES, 'UTF-8'); ?></td>
-                    <td><?php echo htmlspecialchars($anggota['email'], ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td><?php echo htmlspecialchars($anggota['nim'] ?? $anggota['no_anggota'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td><?php echo htmlspecialchars($anggota['nama'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td><?php echo htmlspecialchars($anggota['email'] ?? $anggota['alamat'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                     <td>
                         <a href="edit.php?id=<?php echo (int)$anggota['id']; ?>" class="btn-edit">Edit</a>
                         <a href="hapus.php?id=<?php echo (int)$anggota['id']; ?>" 
