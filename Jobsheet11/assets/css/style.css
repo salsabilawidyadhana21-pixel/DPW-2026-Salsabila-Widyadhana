@@ -506,20 +506,43 @@ footer {
 }
 
 
-/* ===== Hamburger Menu ===== */
-
+/* Styling Tombol Hamburger & Navigasi Mobile */
 .nav-toggle-label {
     display: none;
-
-    font-size: 1.6rem;
-
-    color: #fff;
-
     background: none;
-
     border: none;
-
+    color: #fff;
+    font-size: 1.8rem;
     cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .nav-toggle-label {
+        display: block; /* Tampilkan tombol hamburger di HP */
+    }
+
+    header nav {
+        display: none; /* Sembunyikan menu navigasi secara default */
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    /* Class ini yang di-toggle oleh JavaScript saat tombol diklik */
+    header nav.active,
+    header nav.nav-open {
+        display: block !important; /* Tampilkan menu saat tombol diklik */
+    }
+
+    header nav ul {
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 0;
+    }
+
+    header nav ul li a {
+        display: block;
+        padding: 0.5rem 0;
+    }
 }
 
 
