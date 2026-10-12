@@ -29,26 +29,21 @@ logoutLinks.forEach(function (link) {
 });
 
 
-// =====================================================
+// ===================================================
 // 2. HAMBURGER MENU
-// =====================================================
+// ===================================================
 
-// Mencari tombol hamburger
-const navToggle = document.getElementById('nav-toggle');
-
-// Mencari menu navigasi
-const mainNav = document.getElementById('main-nav');
-
+// Mencari tombol hamburger dan nav menu
+const navToggle = document.getElementById('nav-toggle-btn') || document.getElementById('nav-toggle');
+const mainNav = document.querySelector('header nav') || document.getElementById('main-nav');
 
 // Memastikan kedua elemen ditemukan
 if (navToggle && mainNav) {
-
     // Menjalankan fungsi ketika hamburger diklik
     navToggle.addEventListener('click', function () {
-
         // Menampilkan / menyembunyikan menu
+        mainNav.classList.toggle('active');
         mainNav.classList.toggle('nav-open');
-
     });
-
 }
+
