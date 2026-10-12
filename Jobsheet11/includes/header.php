@@ -1,17 +1,10 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
-    // Atur parameter cookie session HANYA jika session belum dimulai
-    session_set_cookie_params([
-        'lifetime' => 0,
-        'path'     => '/',
-        'httponly' => true,
-        'samesite' => 'Lax'
-    ]);
     session_start();
 }
-
 $sudahLogin = isset($_SESSION['user_id']);
 
+// Hitung path relatif secara otomatis
 $__jobsheetRoot = dirname(__DIR__);
 $__scriptDir = dirname($_SERVER['SCRIPT_FILENAME']);
 $__rel = ltrim(str_replace('\\', '/', substr($__scriptDir, strlen($__jobsheetRoot))), '/');
