@@ -1,107 +1,23 @@
 <?php
-
-// =====================================================
-// MEMASTIKAN USER SUDAH LOGIN
-// =====================================================
-
-require_once '../includes/auth.php';
-
-
-// =====================================================
-// TUGAS MANDIRI:
-// HANYA ADMIN YANG BOLEH MENGHAPUS ANGGOTA
-// =====================================================
-
-require_role('admin');
-
-
-// =====================================================
-// KONEKSI DATABASE
-// =====================================================
-
-require_once '../includes/koneksi.php';
-
-
-// =====================================================
-// CSRF PROTECTION
-// =====================================================
-
-require_once '../includes/csrf.php';
-
-
-// =====================================================
-// 1. MEMASTIKAN REQUEST MENGGUNAKAN POST
-// =====================================================
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/koneksi.php';
+require_once __DIR__ . '/../includes/csrf.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-
     header('Location: list.php');
     exit;
 }
 
+verify_csrf_token($_POST['csrf_token'] ?? null);
 
-// =====================================================
-// 2. VERIFIKASI TOKEN CSRF
-// =====================================================
+$id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
 
-$csrf_token = $_POST['csrf_token'] ?? '';
-
-if (!verify_csrf_token($csrf_token)) {
-
-    die('Token CSRF tidak valid.');
+if ($id) {
+    $stmt = $pdo->prepare("DELETE FROM anggota WHERE id = :id");
+    $stmt->execute(['id' => $id]);
+    $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Data anggota berhasil dihapus.'];
 }
 
-
-// =====================================================
-// 3. VALIDASI ID
-// =====================================================
-
-$id = filter_input(
-    INPUT_POST,
-    'id',
-    FILTER_VALIDATE_INT
-);
-
-
-if ($id === false || $id === null || $id <= 0) {
-
-    header('Location: list.php');
-    exit;
-}
-
-
-// =====================================================
-// 4. HAPUS DATA ANGGOTA
-// Menggunakan prepared statement
-// =====================================================
-
-try {
-
-    $stmt = $pdo->prepare(
-        "DELETE FROM anggota
-         WHERE id = :id"
-    );
-
-
-    $stmt->execute([
-        ':id' => $id
-    ]);
-
-
-    // Setelah berhasil dihapus,
-    // kembali ke daftar anggota
-    header('Location: list.php');
-    exit;
-
-
-} catch (PDOException $e) {
-
-    // Jangan menampilkan detail database
-    // kepada pengguna
-    die(
-        'Gagal menghapus data anggota.'
-    );
-
-}
-
+header('Location: list.php');
+exit;
 ?>

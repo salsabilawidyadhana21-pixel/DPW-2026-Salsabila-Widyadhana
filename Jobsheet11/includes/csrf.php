@@ -1,56 +1,27 @@
 <?php
-
-// =====================================================
-// CSRF PROTECTION
-// =====================================================
-
-
-// Memastikan session sudah dimulai
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-
-// =====================================================
-// Membuat token CSRF
-// =====================================================
-
-function csrf_token()
-{
-    // Jika token belum tersedia,
-    // buat token baru secara acak
+/**
+ * Membuat atau mengambil CSRF token dari session
+ */
+function generate_csrf_token(): string {
     if (empty($_SESSION['csrf_token'])) {
-
-        $_SESSION['csrf_token'] =
-            bin2hex(random_bytes(32));
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
-
-    // Mengembalikan token
     return $_SESSION['csrf_token'];
 }
 
-
-// =====================================================
-// Memeriksa token CSRF
-// =====================================================
-
-function verify_csrf_token($token)
-{
-    // Memastikan token session dan token
-    // dari form tersedia
-    if (
-        empty($_SESSION['csrf_token']) ||
-        empty($token)
-    ) {
-        return false;
+/**
+ * Memverifikasi CSRF token dari request POST
+ */
+function verify_csrf_token(?string $token): void {
+    if (empty($_SESSION['csrf_token']) || empty($token) || !hash_equals($_SESSION['csrf_token'], $token)) {
+        http_response_code(403);
+        $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Permintaan ditolak: CSRF Token tidak valid!'];
+        header("Location: " . ($_SERVER['HTTP_REFERER'] ?? '../index.php'));
+        exit;
     }
-
-
-    // Membandingkan token secara aman
-    return hash_equals(
-        $_SESSION['csrf_token'],
-        $token
-    );
 }
-
 ?>

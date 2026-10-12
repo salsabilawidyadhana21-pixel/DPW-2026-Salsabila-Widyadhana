@@ -1,203 +1,41 @@
 <?php
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/csrf.php';
+$page_title = "Tambah Anggota";
+include __DIR__ . '/../includes/header.php';
 
-// =====================================================
-// MEMASTIKAN USER SUDAH LOGIN
-// =====================================================
-
-require_once '../includes/auth.php';
-
-
-// =====================================================
-// HANYA ADMIN DAN PETUGAS YANG BOLEH MENAMBAH ANGGOTA
-// =====================================================
-
-require_role(['admin', 'petugas']);
-
-
-// =====================================================
-// CSRF PROTECTION
-// =====================================================
-
-require_once '../includes/csrf.php';
-
-
-// Judul halaman
-$page_title = 'Tambah Anggota';
-
-
-// Memanggil header
-require_once '../includes/header.php';
-
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
 ?>
+<section>
+    <h2>Tambah Anggota</h2>
 
+    <?php if ($flash): ?>
+        <p class="flash flash-<?php echo htmlspecialchars($flash['type'], ENT_QUOTES, 'UTF-8'); ?>">
+            <?php echo htmlspecialchars($flash['pesan'], ENT_QUOTES, 'UTF-8'); ?>
+        </p>
+    <?php endif; ?>
 
-<section class="page-header">
-
-    <div>
-
-        <span class="section-label">
-            Data Anggota
-        </span>
-
-        <h1>
-            Tambah Anggota
-        </h1>
+    <form id="form-tambah" method="post" action="proses_tambah.php">
+        <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
 
         <p>
-            Tambahkan data anggota baru.
+            <label for="nama">Nama Lengkap</label><br>
+            <input type="text" id="nama" name="nama" required>
         </p>
-
-    </div>
-
-
-    <!-- Tombol kembali -->
-    <a
-        href="list.php"
-        class="btn btn-secondary">
-
-        Kembali
-
-    </a>
-
-</section>
-
-
-<section class="content-card form-card">
-
-
-    <!-- =================================================
-         FORM TAMBAH ANGGOTA
-         ================================================= -->
-
-    <form
-        action="proses_tambah.php"
-        method="POST">
-
-
-        <!-- =================================================
-             TOKEN CSRF
-             ================================================= -->
-
-        <input
-            type="hidden"
-            name="csrf_token"
-            value="<?= htmlspecialchars(csrf_token()) ?>">
-
-
-        <!-- =================================================
-             INPUT NAMA
-             ================================================= -->
-
-        <div class="form-group">
-
-            <label for="nama">
-                Nama
-            </label>
-
-            <input
-                type="text"
-                id="nama"
-                name="nama"
-                placeholder="Masukkan nama anggota"
-                maxlength="100"
-                required>
-
-        </div>
-
-
-        <!-- =================================================
-             INPUT NOMOR ANGGOTA
-             ================================================= -->
-
-        <div class="form-group">
-
-            <label for="no_anggota">
-                No. Anggota
-            </label>
-
-            <input
-                type="text"
-                id="no_anggota"
-                name="no_anggota"
-                placeholder="Masukkan nomor anggota"
-                maxlength="30"
-                required>
-
-        </div>
-
-
-        <!-- =================================================
-             INPUT ALAMAT
-             ================================================= -->
-
-        <div class="form-group">
-
-            <label for="alamat">
-                Alamat
-            </label>
-
-            <textarea
-                id="alamat"
-                name="alamat"
-                placeholder="Masukkan alamat anggota"
-                maxlength="500"></textarea>
-
-        </div>
-
-
-        <!-- =================================================
-             INPUT NOMOR HP
-             ================================================= -->
-
-        <div class="form-group">
-
-            <label for="no_hp">
-                No. HP
-            </label>
-
-            <input
-                type="text"
-                id="no_hp"
-                name="no_hp"
-                placeholder="Masukkan nomor HP"
-                maxlength="20">
-
-        </div>
-
-
-        <!-- =================================================
-             TOMBOL FORM
-             ================================================= -->
-
-        <div class="form-actions">
-
-            <a
-                href="list.php"
-                class="btn btn-secondary">
-
-                Batal
-
-            </a>
-
-
-            <button
-                type="submit"
-                class="btn btn-primary">
-
-                Simpan
-
-            </button>
-
-        </div>
-
+        <p>
+            <label for="no_anggota">No. Anggota</label><br>
+            <input type="text" id="no_anggota" name="no_anggota" required>
+        </p>
+        <p>
+            <label for="alamat">Alamat</label><br>
+            <textarea id="alamat" name="alamat" style="width: 100%; max-width: 400px; padding: 0.55rem;"></textarea>
+        </p>
+        <p>
+            <label for="no_hp">No. HP</label><br>
+            <input type="text" id="no_hp" name="no_hp">
+        </p>
+        <button type="submit">Simpan</button>
     </form>
-
 </section>
-
-
-<?php
-
-// Memanggil footer
-require_once '../includes/footer.php';
-
-?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>
