@@ -1,5 +1,5 @@
 <?php
-//require_once __DIR__ . '/../includes/auth.php';//
+// require_once __DIR__ . '/../includes/auth.php';
 $page_title = "Daftar Buku";
 include __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/koneksi.php';
@@ -7,13 +7,11 @@ require_once __DIR__ . '/../includes/koneksi.php';
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
-// Fitur Pencarian & Pagination
 $search = trim($_GET['search'] ?? '');
 $page = max(1, (int)($_GET['page'] ?? 1));
 $limit = 5;
 $offset = ($page - 1) * $limit;
 
-// Query Hitung Total Data
 if ($search !== '') {
     $stmtCount = $pdo->prepare("SELECT COUNT(*) FROM buku WHERE judul ILIKE :search OR pengarang ILIKE :search");
     $stmtCount->execute(['search' => "%{$search}%"]);
@@ -23,7 +21,6 @@ if ($search !== '') {
 $totalRows = (int)$stmtCount->fetchColumn();
 $totalPages = ceil($totalRows / $limit);
 
-// Query Ambil Data Buku
 if ($search !== '') {
     $stmt = $pdo->prepare("SELECT * FROM buku WHERE judul ILIKE :search OR pengarang ILIKE :search ORDER BY id DESC LIMIT :limit OFFSET :offset");
     $stmt->bindValue(':search', "%{$search}%", PDO::PARAM_STR);
@@ -39,27 +36,105 @@ if ($search !== '') {
 $bukuList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-<section>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+<style>
+    .card-box {
+        background: #ffffff;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .card-header-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    .card-header-flex h2 {
+        color: #1d5b8a;
+        margin: 0;
+        font-size: 1.5rem;
+    }
+    .btn-primary {
+        background-color: #1d5b8a;
+        color: #ffffff !important;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+
+    /* Custom Table Styling */
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+    .custom-table th {
+        background-color: #f8f9fa;
+        color: #1d5b8a;
+        text-align: left;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        border-bottom: 2px solid #dee2e6;
+    }
+    .custom-table td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #e9ecef;
+        font-size: 0.9rem;
+        color: #495057;
+    }
+    .custom-table tbody tr:hover {
+        background-color: #f1f5f9;
+    }
+
+    /* Badges & Action Buttons */
+    .badge {
+        padding: 0.25rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        display: inline-block;
+    }
+    .badge-success { background-color: #d4edda; color: #155724; }
+    .badge-danger { background-color: #f8d7da; color: #721c24; }
+
+    .action-btn {
+        padding: 0.3rem 0.65rem;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: bold;
+        display: inline-block;
+    }
+    .btn-warning { background-color: #ffc107; color: #212529 !important; }
+    .btn-toggle { background-color: #6c757d; color: #ffffff !important; }
+    .btn-toggle-active { background-color: #28a745; color: #ffffff !important; }
+    .btn-danger { background-color: #dc3545; color: #ffffff !important; }
+</style>
+
+<div class="card-box">
+    <div class="card-header-flex">
         <h2>Daftar Buku</h2>
-        <a href="tambah.php" style="background-color: #1d5b8a; color: white; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; font-weight: bold;">+ Tambah Buku</a>
+        <a href="tambah.php" class="btn-primary">+ Tambah Buku</a>
     </div>
 
     <?php if ($flash): ?>
-        <p class="flash flash-<?php echo htmlspecialchars($flash['type'] ?? 'info', ENT_QUOTES, 'UTF-8'); ?>" style="padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; background-color: <?php echo ($flash['type'] ?? '') === 'error' ? '#f8d7da' : '#d4edda'; ?>; color: <?php echo ($flash['type'] ?? '') === 'error' ? '#721c24' : '#155724'; ?>;">
+        <div style="padding: 0.75rem 1rem; border-radius: 4px; margin-bottom: 1rem; background-color: <?php echo ($flash['type'] ?? '') === 'error' ? '#f8d7da' : '#d4edda'; ?>; color: <?php echo ($flash['type'] ?? '') === 'error' ? '#721c24' : '#155724'; ?>;">
             <?php echo htmlspecialchars($flash['pesan'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-        </p>
+        </div>
     <?php endif; ?>
 
-    <form method="get" action="list.php" style="margin-bottom: 1rem; display: flex; gap: 0.5rem;">
-        <input type="text" name="search" placeholder="Cari judul atau pengarang..." value="<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>" style="padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; width: 250px;">
-        <button type="submit" style="padding: 0.5rem 1rem; background-color: #f0f0f0; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;">Cari</button>
+    <form method="get" action="list.php" style="margin-bottom: 1.2rem; display: flex; gap: 0.5rem;">
+        <input type="text" name="search" placeholder="Cari judul atau pengarang..." value="<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>" style="padding: 0.5rem; border: 1px solid #ced4da; border-radius: 4px; width: 260px; font-size: 0.9rem;">
+        <button type="submit" style="padding: 0.5rem 1rem; background-color: #e9ecef; border: 1px solid #ced4da; border-radius: 4px; cursor: pointer; font-weight: 500;">Cari</button>
     </form>
 
-    <div class="table-responsive">
-        <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+    <div style="overflow-x: auto;">
+        <table class="custom-table">
             <thead>
-                <tr style="background-color: #f2f2f2;">
+                <tr>
                     <th>No</th>
                     <th>Judul</th>
                     <th>Pengarang</th>
@@ -67,50 +142,36 @@ $bukuList = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <th>ISBN</th>
                     <th>Stok</th>
                     <th>Status</th>
-                    <th style="min-width: 220px;">Aksi</th>
+                    <th style="min-width: 210px;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (empty($bukuList)): ?>
                     <tr>
-                        <td colspan="8" style="text-align: center;">Tidak ada data buku.</td>
+                        <td colspan="8" style="text-align: center; color: #888;">Tidak ada data buku.</td>
                     </tr>
                 <?php else: ?>
                     <?php $no = $offset + 1; foreach ($bukuList as $b): ?>
                         <?php $status = $b['status'] ?? 'Aktif'; ?>
                         <tr>
                             <td><?php echo $no++; ?></td>
-                            <td><?php echo htmlspecialchars($b['judul'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><strong><?php echo htmlspecialchars($b['judul'], ENT_QUOTES, 'UTF-8'); ?></strong></td>
                             <td><?php echo htmlspecialchars($b['pengarang'], ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><?php echo htmlspecialchars($b['tahun_terbit'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><?php echo htmlspecialchars($b['isbn'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><strong><?php echo htmlspecialchars($b['stok'], ENT_QUOTES, 'UTF-8'); ?></strong></td>
                             <td>
-                                <span style="background-color: <?php echo $status === 'Aktif' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $status === 'Aktif' ? '#155724' : '#721c24'; ?>; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.85rem; font-weight: bold;">
+                                <span class="badge <?php echo $status === 'Aktif' ? 'badge-success' : 'badge-danger'; ?>">
                                     <?php echo htmlspecialchars($status, ENT_QUOTES, 'UTF-8'); ?>
                                 </span>
                             </td>
                             <td>
-                                <div style="display: flex; gap: 0.3rem; flex-wrap: wrap;">
-                                    <!-- Tombol Edit -->
-                                    <a href="edit.php?id=<?php echo $b['id']; ?>" 
-                                       style="background-color: #ffc107; color: #212529; padding: 0.3rem 0.6rem; border-radius: 4px; text-decoration: none; font-size: 0.8rem; font-weight: bold;">
-                                       Edit
+                                <div style="display: flex; gap: 0.3rem;">
+                                    <a href="edit.php?id=<?php echo $b['id']; ?>" class="action-btn btn-warning">Edit</a>
+                                    <a href="toggle_status.php?id=<?php echo $b['id']; ?>" onclick="return confirm('Ubah status buku ini?');" class="action-btn <?php echo $status === 'Aktif' ? 'btn-toggle' : 'btn-toggle-active'; ?>">
+                                        <?php echo $status === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'; ?>
                                     </a>
-
-                                    <!-- Tombol Toggle Status -->
-                                    <a href="toggle_status.php?id=<?php echo $b['id']; ?>" 
-                                       onclick="return confirm('Ubah status buku ini?');" 
-                                       style="background-color: <?php echo $status === 'Aktif' ? '#6c757d' : '#28a745'; ?>; color: white; padding: 0.3rem 0.6rem; border-radius: 4px; text-decoration: none; font-size: 0.8rem; font-weight: bold;">
-                                       <?php echo $status === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'; ?>
-                                    </a>
-
-                                    <!-- Tombol Hapus -->
-                                    <a href="hapus.php?id=<?php echo $b['id']; ?>" 
-                                       onclick="return confirm('Apakah Anda yakin ingin menghapus buku ini?');" 
-                                       style="background-color: #dc3545; color: white; padding: 0.3rem 0.6rem; border-radius: 4px; text-decoration: none; font-size: 0.8rem; font-weight: bold;">
-                                       Hapus
-                                    </a>
+                                    <a href="hapus.php?id=<?php echo $b['id']; ?>" onclick="return confirm('Yakin ingin menghapus buku ini?');" class="action-btn btn-danger">Hapus</a>
                                 </div>
                             </td>
                         </tr>
@@ -120,17 +181,16 @@ $bukuList = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </table>
     </div>
 
-    <!-- Navigasi Pagination -->
     <?php if ($totalPages > 1): ?>
-        <div style="margin-top: 1rem; display: flex; gap: 0.25rem;">
+        <div style="margin-top: 1.5rem; display: flex; gap: 0.3rem;">
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                 <a href="list.php?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>" 
-                   style="padding: 0.3rem 0.6rem; border: 1px solid #ccc; text-decoration: none; border-radius: 3px; <?php echo $i === $page ? 'background-color: #1d5b8a; color: white;' : 'color: #333;'; ?>">
+                   style="padding: 0.4rem 0.8rem; border: 1px solid #ced4da; text-decoration: none; border-radius: 4px; font-size: 0.85rem; <?php echo $i === $page ? 'background-color: #1d5b8a; color: white; border-color: #1d5b8a;' : 'color: #333; background: #fff;'; ?>">
                     <?php echo $i; ?>
                 </a>
             <?php endfor; ?>
         </div>
     <?php endif; ?>
-</section>
+</div>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>
