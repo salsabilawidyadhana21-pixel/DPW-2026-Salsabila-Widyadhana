@@ -42,7 +42,7 @@ $bukuList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <section>
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
         <h2>Daftar Buku</h2>
-        <a href="tambah.php" style="background-color: #1d5b8a; color: white; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none;">+ Tambah Buku</a>
+        <a href="tambah.php" style="background-color: #1d5b8a; color: white; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; font-weight: bold;">+ Tambah Buku</a>
     </div>
 
     <?php if ($flash): ?>
@@ -67,7 +67,7 @@ $bukuList = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <th>ISBN</th>
                     <th>Stok</th>
                     <th>Status</th>
-                    <th>Aksi</th>
+                    <th style="min-width: 220px;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -86,16 +86,32 @@ $bukuList = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td><?php echo htmlspecialchars($b['isbn'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><strong><?php echo htmlspecialchars($b['stok'], ENT_QUOTES, 'UTF-8'); ?></strong></td>
                             <td>
-                                <span style="color: <?php echo $status === 'Aktif' ? 'green' : 'red'; ?>; font-weight: bold;">
+                                <span style="background-color: <?php echo $status === 'Aktif' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $status === 'Aktif' ? '#155724' : '#721c24'; ?>; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.85rem; font-weight: bold;">
                                     <?php echo htmlspecialchars($status, ENT_QUOTES, 'UTF-8'); ?>
                                 </span>
                             </td>
                             <td>
-                                <a href="edit.php?id=<?php echo $b['id']; ?>" style="color: #1d5b8a; text-decoration: none;">Edit</a> | 
-                                <a href="toggle_status.php?id=<?php echo $b['id']; ?>" onclick="return confirm('Ubah status buku ini?');" style="color: #1d5b8a; text-decoration: none;">
-                                    <?php echo $status === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'; ?>
-                                </a> | 
-                                <a href="hapus.php?id=<?php echo $b['id']; ?>" onclick="return confirm('Apakah Anda yakin ingin menghapus buku ini?');" style="color: red; text-decoration: none;">Hapus</a>
+                                <div style="display: flex; gap: 0.3rem; flex-wrap: wrap;">
+                                    <!-- Tombol Edit -->
+                                    <a href="edit.php?id=<?php echo $b['id']; ?>" 
+                                       style="background-color: #ffc107; color: #212529; padding: 0.3rem 0.6rem; border-radius: 4px; text-decoration: none; font-size: 0.8rem; font-weight: bold;">
+                                       Edit
+                                    </a>
+
+                                    <!-- Tombol Toggle Status -->
+                                    <a href="toggle_status.php?id=<?php echo $b['id']; ?>" 
+                                       onclick="return confirm('Ubah status buku ini?');" 
+                                       style="background-color: <?php echo $status === 'Aktif' ? '#6c757d' : '#28a745'; ?>; color: white; padding: 0.3rem 0.6rem; border-radius: 4px; text-decoration: none; font-size: 0.8rem; font-weight: bold;">
+                                       <?php echo $status === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'; ?>
+                                    </a>
+
+                                    <!-- Tombol Hapus -->
+                                    <a href="hapus.php?id=<?php echo $b['id']; ?>" 
+                                       onclick="return confirm('Apakah Anda yakin ingin menghapus buku ini?');" 
+                                       style="background-color: #dc3545; color: white; padding: 0.3rem 0.6rem; border-radius: 4px; text-decoration: none; font-size: 0.8rem; font-weight: bold;">
+                                       Hapus
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     <?php endforeach; ?>
