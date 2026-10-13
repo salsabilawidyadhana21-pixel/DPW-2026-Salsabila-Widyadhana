@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../includes/auth.php';
+//require_once __DIR__ . '/../includes/auth.php';//
 $page_title = "Tambah Peminjaman";
 include __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/koneksi.php';
