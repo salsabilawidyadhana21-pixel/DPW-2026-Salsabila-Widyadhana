@@ -22,5 +22,13 @@
         "kategori": "Elektronik",
         "harga": "1.800.000",
         "stok": 3
+    },
+
+    {
+        "nama_produk": "Sepatu Pink",
+        "kategori": "Aksesoris",
+        "harga": "1.800.000",
+        "stok": 3,
+        "diskon": "10%"
     }
 ]
