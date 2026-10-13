@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
         'pesan' => 'Silakan login terlebih dahulu untuk mengakses halaman tersebut.'
     ];
     
-    // Redirect pasti ke login Jobsheet12
-    header('Location: /Jobsheet12/auth/login.php');
+    // Redirect relatif yang aman sesuai letak folder Jobsheet
+    header('Location: ' . dirname($_SERVER['SCRIPT_NAME']) . '/../auth/login.php');
     exit;
 }
