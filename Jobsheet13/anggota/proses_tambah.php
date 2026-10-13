@@ -1,165 +1,35 @@
 <?php
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/csrf.php';
+require_once __DIR__ . '/../includes/koneksi.php';
 
-// =====================================================
-// MEMASTIKAN USER SUDAH LOGIN
-// =====================================================
+verify_csrf_token($_POST['csrf_token'] ?? null);
 
-require_once '../includes/auth.php';
+$nama = trim($_POST['nama'] ?? '');
+$no_anggota = trim($_POST['no_anggota'] ?? '');
+$alamat = trim($_POST['alamat'] ?? '');
+$no_hp = trim($_POST['no_hp'] ?? '');
 
-
-// =====================================================
-// HANYA ADMIN DAN PETUGAS YANG BOLEH MENAMBAH ANGGOTA
-// =====================================================
-
-require_role(['admin', 'petugas']);
-
-
-// =====================================================
-// KONEKSI DATABASE
-// =====================================================
-
-require_once '../includes/koneksi.php';
-
-
-// =====================================================
-// CSRF PROTECTION
-// =====================================================
-
-require_once '../includes/csrf.php';
-
-
-// =====================================================
-// 1. MEMASTIKAN REQUEST MENGGUNAKAN POST
-// =====================================================
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-
+if ($nama === '' || $no_anggota === '') {
+    $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Nama dan No Anggota wajib diisi.'];
     header('Location: tambah.php');
     exit;
 }
 
-
-// =====================================================
-// 2. VERIFIKASI TOKEN CSRF
-// =====================================================
-
-$csrf_token = $_POST['csrf_token'] ?? '';
-
-if (!verify_csrf_token($csrf_token)) {
-
-    die('Token CSRF tidak valid.');
-}
-
-
-// =====================================================
-// 3. MENGAMBIL DATA DARI FORM
-// =====================================================
-
-$nama = trim($_POST['nama'] ?? '');
-
-$no_anggota = trim($_POST['no_anggota'] ?? '');
-
-$alamat = trim($_POST['alamat'] ?? '');
-
-$no_hp = trim($_POST['no_hp'] ?? '');
-
-
-// =====================================================
-// 4. VALIDASI DATA WAJIB
-// =====================================================
-
-if ($nama === '' || $no_anggota === '') {
-
-    die(
-        'Nama dan nomor anggota wajib diisi.'
-    );
-}
-
-
-// =====================================================
-// 5. VALIDASI PANJANG DATA
-// =====================================================
-
-if (strlen($nama) > 100) {
-
-    die('Nama maksimal 100 karakter.');
-}
-
-
-if (strlen($no_anggota) > 30) {
-
-    die('Nomor anggota maksimal 30 karakter.');
-}
-
-
-if (strlen($alamat) > 500) {
-
-    die('Alamat maksimal 500 karakter.');
-}
-
-
-if (strlen($no_hp) > 20) {
-
-    die('Nomor HP maksimal 20 karakter.');
-}
-
-
-// =====================================================
-// 6. MENYIMPAN DATA
-// Menggunakan prepared statement
-// =====================================================
-
 try {
-
-    $stmt = $pdo->prepare(
-        "INSERT INTO anggota
-        (
-            nama,
-            no_anggota,
-            alamat,
-            no_hp
-        )
-        VALUES
-        (
-            :nama,
-            :no_anggota,
-            :alamat,
-            :no_hp
-        )"
-    );
-
-
+    $stmt = $pdo->prepare("INSERT INTO anggota (nama, no_anggota, alamat, no_hp) VALUES (:nama, :no_anggota, :alamat, :no_hp)");
     $stmt->execute([
-
-        ':nama' => $nama,
-
-        ':no_anggota' => $no_anggota,
-
-        ':alamat' => $alamat !== ''
-            ? $alamat
-            : null,
-
-        ':no_hp' => $no_hp !== ''
-            ? $no_hp
-            : null
-
+        'nama' => $nama,
+        'no_anggota' => $no_anggota,
+        'alamat' => $alamat,
+        'no_hp' => $no_hp
     ]);
 
-
-    // Setelah berhasil disimpan,
-    // kembali ke daftar anggota
+    $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Anggota berhasil ditambahkan!'];
     header('Location: list.php');
     exit;
-
-
-} catch (PDOException $e) {
-
-    // Jangan menampilkan detail database
-    // kepada pengguna
-    die(
-        'Gagal menambahkan data anggota.'
-    );
-
+} catch (Exception $e) {
+    $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Gagal menambah anggota: ' . $e->getMessage()];
+    header('Location: tambah.php');
+    exit;
 }
-
-?>

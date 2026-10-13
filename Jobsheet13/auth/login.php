@@ -1,120 +1,50 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-// HALAMAN LOGIN
+if (isset($_SESSION['user_id'])) {
+    header('Location: ../index.php');
+    exit;
+}
 
-$page_title = 'Login';
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
-// Memanggil header website
-require_once '../includes/header.php';
+$page_title = "Login";
+include __DIR__ . '/../includes/header.php';
 
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
 ?>
+<section class="login-card">
+    <h2>Login Petugas</h2>
 
-<section class="page-header">
-
-    <div>
-
-        <span class="section-label">
-            Autentikasi
-        </span>
-
-        <h1>
-            Login
-        </h1>
-
-        <p>
-            Login untuk mengakses sistem SIMPUS-Mini.
+    <?php if ($flash): ?>
+        <p class="flash flash-<?php echo htmlspecialchars($flash['type'] ?? 'error', ENT_QUOTES, 'UTF-8'); ?>" style="padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; background-color: <?php echo ($flash['type'] ?? '') === 'error' ? '#f8d7da' : '#d4edda'; ?>; color: <?php echo ($flash['type'] ?? '') === 'error' ? '#721c24' : '#155724'; ?>;">
+            <?php echo htmlspecialchars($flash['pesan'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
         </p>
+    <?php endif; ?>
 
-    </div>
-
-    <!-- Tombol menuju halaman register -->
-    <a
-        href="register.php"
-        class="btn btn-secondary">
-
-        Register
-
-    </a>
-
-</section>
-
-
-<section class="content-card form-card">
-
-    <!--
-        Form login mengirim data ke
-        proses_login.php menggunakan method POST
-    -->
-
-    <form
-        action="proses_login.php"
-        method="POST"
-        id="form-login">
-
-
-        <!-- Input username -->
-        <div class="form-group">
-
-            <label for="username">
-                Username
-            </label>
-
-            <input
-                type="text"
-                id="username"
-                name="username"
-                placeholder="Masukkan username"
-                required>
-
-        </div>
-
-
-        <!-- Input password -->
-        <div class="form-group">
-
-            <label for="password">
-                Password
-            </label>
-
-            <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Masukkan password"
-                required>
-
-        </div>
-
-
-        <!-- Tombol form -->
-        <div class="form-actions">
-
-            <a
-                href="../index.php"
-                class="btn btn-secondary">
-
-                Batal
-
-            </a>
-
-            <button
-                type="submit"
-                class="btn btn-primary">
-
-                Login
-
-            </button>
-
-        </div>
-
+    <form method="post" action="proses_login.php">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
+        
+        <p>
+            <label for="username">Username:</label><br>
+            <input type="text" name="username" id="username" required style="width: 100%; padding: 0.5rem; margin-top: 0.25rem;">
+        </p>
+        
+        <p style="margin-top: 1rem;">
+            <label for="password">Password:</label><br>
+            <input type="password" name="password" id="password" required style="width: 100%; padding: 0.5rem; margin-top: 0.25rem;">
+        </p>
+        
+        <p style="margin-top: 1.25rem;">
+            <button type="submit" style="padding: 0.5rem 1.25rem; background-color: #1d5b8a; color: white; border: none; border-radius: 4px; cursor: pointer;">Login</button>
+        </p>
     </form>
-
+    <p style="margin-top: 1rem;">Belum punya akun? <a href="register.php">Registrasi di sini</a></p>
 </section>
 
-
-<?php
-
-// Memanggil footer website
-require_once '../includes/footer.php';
-
-?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

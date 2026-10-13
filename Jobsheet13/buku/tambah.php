@@ -1,245 +1,36 @@
 <?php
+require_once __DIR__ . '/../includes/auth.php';
+$page_title = "Tambah Buku";
+include __DIR__ . '/../includes/header.php';
 
-// =====================================================
-// MEMASTIKAN USER SUDAH LOGIN
-// =====================================================
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
 
-require_once '../includes/auth.php';
-
-
-// =====================================================
-// HANYA ADMIN DAN PETUGAS YANG BOLEH MENAMBAH BUKU
-// =====================================================
-
-require_role(['admin', 'petugas']);
-
-
-// =====================================================
-// MEMANGGIL CSRF PROTECTION
-// =====================================================
-
-require_once '../includes/csrf.php';
-
-
-// Judul halaman
-$page_title = 'Tambah Buku';
-
-
-// Memanggil header
-require_once '../includes/header.php';
-
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 ?>
+<section>
+    <h2>Tambah Buku Baru</h2>
 
-
-<section class="page-header">
-
-    <div>
-
-        <span class="section-label">
-            Data Buku
-        </span>
-
-        <h1>
-            Tambah Buku
-        </h1>
-
-        <p>
-            Tambahkan data buku baru ke dalam sistem.
+    <?php if ($flash): ?>
+        <p class="flash flash-<?php echo htmlspecialchars($flash['type'] ?? 'error', ENT_QUOTES, 'UTF-8'); ?>" style="padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; background-color: #f8d7da; color: #721c24;">
+            <?php echo htmlspecialchars($flash['pesan'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
         </p>
+    <?php endif; ?>
 
-    </div>
+    <form method="post" action="proses_tambah.php">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
 
+        <p><label>Judul Buku:</label><br><input type="text" name="judul" required style="width: 100%; max-width: 400px; padding: 0.5rem;"></p>
+        <p><label>Pengarang:</label><br><input type="text" name="pengarang" required style="width: 100%; max-width: 400px; padding: 0.5rem;"></p>
+        <p><label>Tahun Terbit:</label><br><input type="number" name="tahun" required style="width: 100%; max-width: 400px; padding: 0.5rem;"></p>
+        <p><label>ISBN:</label><br><input type="text" name="isbn" style="width: 100%; max-width: 400px; padding: 0.5rem;"></p>
+        <p><label>Stok:</label><br><input type="number" name="stok" value="1" min="0" required style="width: 100%; max-width: 400px; padding: 0.5rem;"></p>
 
-    <!-- Tombol kembali -->
-    <a
-        href="list.php"
-        class="btn btn-secondary">
-
-        Kembali
-
-    </a>
-
-</section>
-
-
-<section class="content-card form-card">
-
-
-    <!-- =================================================
-         FORM TAMBAH BUKU
-         ================================================= -->
-
-    <form
-        action="proses_tambah.php"
-        method="POST">
-
-
-        <!-- =================================================
-             TOKEN CSRF
-             ================================================= -->
-
-        <input
-            type="hidden"
-            name="csrf_token"
-            value="<?= htmlspecialchars(csrf_token()) ?>">
-
-
-        <!-- =================================================
-             INPUT JUDUL
-             ================================================= -->
-
-        <div class="form-group">
-
-            <label for="judul">
-                Judul
-            </label>
-
-            <input
-                type="text"
-                id="judul"
-                name="judul"
-                placeholder="Masukkan judul buku"
-                maxlength="150"
-                required>
-
-        </div>
-
-
-        <!-- =================================================
-             INPUT PENGARANG
-             ================================================= -->
-
-        <div class="form-group">
-
-            <label for="pengarang">
-                Pengarang
-            </label>
-
-            <input
-                type="text"
-                id="pengarang"
-                name="pengarang"
-                placeholder="Masukkan nama pengarang"
-                maxlength="100"
-                required>
-
-        </div>
-
-
-        <!-- =================================================
-             INPUT TAHUN
-             ================================================= -->
-
-        <div class="form-group">
-
-            <label for="tahun">
-                Tahun
-            </label>
-
-            <input
-                type="number"
-                id="tahun"
-                name="tahun"
-                placeholder="Masukkan tahun terbit"
-                required>
-
-        </div>
-
-
-        <!-- =================================================
-             INPUT ISBN
-             ================================================= -->
-
-        <div class="form-group">
-
-            <label for="isbn">
-                ISBN
-            </label>
-
-            <input
-                type="text"
-                id="isbn"
-                name="isbn"
-                placeholder="Masukkan ISBN"
-                maxlength="30">
-
-        </div>
-
-
-        <!-- =================================================
-             INPUT STOK
-             ================================================= -->
-
-        <div class="form-group">
-
-            <label for="stok">
-                Stok
-            </label>
-
-            <input
-                type="number"
-                id="stok"
-                name="stok"
-                value="0"
-                min="0"
-                required>
-
-        </div>
-
-
-        <!-- =================================================
-             INPUT KATEGORI
-             ================================================= -->
-
-        <div class="form-group">
-
-            <label for="kategori">
-                Kategori
-            </label>
-
-            <input
-                type="text"
-                id="kategori"
-                name="kategori"
-                placeholder="Masukkan kategori buku"
-                maxlength="30">
-
-        </div>
-
-
-        <!-- =================================================
-             TOMBOL FORM
-             ================================================= -->
-
-        <div class="form-actions">
-
-            <a
-                href="list.php"
-                class="btn btn-secondary">
-
-                Batal
-
-            </a>
-
-
-            <button
-                type="submit"
-                class="btn btn-primary">
-
-                Simpan Buku
-
-            </button>
-
-        </div>
-
+        <button type="submit" style="padding: 0.5rem 1.25rem; background-color: #1d5b8a; color: white; border: none; border-radius: 4px; cursor: pointer;">Simpan Buku</button>
     </form>
-
+    <p style="margin-top: 1rem;"><a href="list.php">&laquo; Kembali ke Daftar Buku</a></p>
 </section>
 
-
-<?php
-
-// Memanggil footer
-require_once '../includes/footer.php';
-
-?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

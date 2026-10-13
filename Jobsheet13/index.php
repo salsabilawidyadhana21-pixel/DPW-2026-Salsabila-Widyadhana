@@ -1,233 +1,103 @@
 <?php
+require_once __DIR__ . '/includes/auth.php';
+$page_title = "Beranda";
+include __DIR__ . '/includes/header.php';
+require_once __DIR__ . '/includes/koneksi.php';
 
-// Memastikan user sudah login
-require_once 'includes/auth.php';
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
 
-// Admin dan petugas boleh mengakses dashboard
-require_role(['admin', 'petugas']);
+$totalBuku = (int) $pdo->query("SELECT COUNT(*) FROM buku")->fetchColumn();
+$totalAnggota = (int) $pdo->query("SELECT COUNT(*) FROM anggota")->fetchColumn();
 
-// Koneksi database
-require_once 'includes/koneksi.php';
-
-// Judul halaman
-$page_title = 'Dashboard';
-
-// Menghitung jumlah buku
-$stmtBuku = $pdo->query(
-    "SELECT COUNT(*) FROM buku"
-);
-$totalBuku = $stmtBuku->fetchColumn();
-
-// Menghitung total stok buku
-$stmtStok = $pdo->query(
-    "SELECT COALESCE(SUM(stok), 0) FROM buku"
-);
-$totalStok = $stmtStok->fetchColumn();
-
-// Menghitung jumlah anggota
-$stmtAnggota = $pdo->query(
-    "SELECT COUNT(*) FROM anggota"
-);
-$totalAnggota = $stmtAnggota->fetchColumn();
-
-// Menghitung peminjaman yang masih aktif
-$stmtDipinjam = $pdo->query(
-    "SELECT COUNT(*)
-     FROM peminjaman
-     WHERE status = 'dipinjam'"
-);
-$totalDipinjam = $stmtDipinjam->fetchColumn();
-
-// Menghitung buku yang sudah dikembalikan
-$stmtDikembalikan = $pdo->query(
-    "SELECT COUNT(*)
-     FROM peminjaman
-     WHERE status = 'dikembalikan'"
-);
-$totalDikembalikan = $stmtDikembalikan->fetchColumn();
-
-// Menghitung peminjaman yang terlambat
-$stmtTerlambat = $pdo->query(
-    "SELECT COUNT(*)
-     FROM peminjaman
-     WHERE status = 'dipinjam'
-       AND tanggal_jatuh_tempo < CURRENT_DATE"
-);
-$totalTerlambat = $stmtTerlambat->fetchColumn();
-
-// Memanggil header
-require_once 'includes/header.php';
-
+$totalPinjam = 0;
+try {
+    $totalPinjam = (int) $pdo->query("SELECT COUNT(*) FROM peminjaman WHERE status = 'dipinjam'")->fetchColumn();
+} catch (Exception $e) {
+    $totalPinjam = 0;
+}
 ?>
 
-<section class="page-header">
+<style>
+    .welcome-card {
+        background: #ffffff;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        margin-bottom: 1.5rem;
+    }
+    .welcome-card h2 {
+        color: #1d5b8a;
+        margin-bottom: 0.5rem;
+        font-size: 1.6rem;
+    }
+    .welcome-card p {
+        color: #555;
+        font-size: 0.95rem;
+    }
+    .stats-card {
+        background: #ffffff;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .stats-card h3 {
+        color: #1d5b8a;
+        margin-bottom: 1.2rem;
+        font-size: 1.2rem;
+    }
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    .stat-item {
+        background: #eef4fa;
+        border: 1px solid #d0e1f9;
+        padding: 1.5rem;
+        border-radius: 8px;
+        text-align: center;
+    }
+    .stat-item h4 {
+        color: #444;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+    .stat-item p {
+        color: #1d5b8a;
+        font-size: 2.2rem;
+        font-weight: bold;
+        margin: 0;
+    }
+</style>
 
-    <div>
-        <span class="section-label">
-            SIMPUS-Mini
-        </span>
+<div class="welcome-card">
+    <h2>Selamat Datang di Sistem Perpustakaan Mini</h2>
+    <p>Aplikasi sederhana untuk mengelola data buku, anggota, serta transaksi peminjaman perpustakaan.</p>
 
-        <h1>
-            Dashboard
-        </h1>
-
-        <p>
-            Selamat datang di Sistem Informasi Perpustakaan Mini.
+    <?php if ($flash): ?>
+        <p class="flash flash-<?php echo htmlspecialchars($flash['type'] ?? 'info', ENT_QUOTES, 'UTF-8'); ?>" style="padding: 0.75rem; border-radius: 4px; margin-top: 1rem; background-color: <?php echo ($flash['type'] ?? '') === 'error' ? '#f8d7da' : '#d4edda'; ?>; color: <?php echo ($flash['type'] ?? '') === 'error' ? '#721c24' : '#155724'; ?>;">
+            <?php echo htmlspecialchars($flash['pesan'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
         </p>
+    <?php endif; ?>
+</div>
+
+<div class="stats-card">
+    <h3>Ringkasan Real-Time</h3>
+    <div class="stats-grid">
+        <div class="stat-item">
+            <h4>Total Buku</h4>
+            <p><?php echo $totalBuku; ?></p>
+        </div>
+        <div class="stat-item">
+            <h4>Total Anggota</h4>
+            <p><?php echo $totalAnggota; ?></p>
+        </div>
+        <div class="stat-item">
+            <h4>Sedang Dipinjam</h4>
+            <p><?php echo $totalPinjam; ?></p>
+        </div>
     </div>
+</div>
 
-</section>
-
-<!-- Ringkasan data -->
-<section class="dashboard-grid">
-
-    <div class="content-card">
-        <span class="section-label">
-            Total Buku
-        </span>
-
-        <h2>
-            <?= (int) $totalBuku ?>
-        </h2>
-
-        <p>
-            Judul buku terdaftar
-        </p>
-
-        <a href="buku/list.php" class="btn btn-secondary">
-            Lihat Buku
-        </a>
-    </div>
-
-    <div class="content-card">
-        <span class="section-label">
-            Stok Buku
-        </span>
-
-        <h2>
-            <?= (int) $totalStok ?>
-        </h2>
-
-        <p>
-            Buku tersedia di perpustakaan
-        </p>
-
-        <a href="buku/list.php" class="btn btn-secondary">
-            Lihat Stok
-        </a>
-    </div>
-
-    <div class="content-card">
-        <span class="section-label">
-            Total Anggota
-        </span>
-
-        <h2>
-            <?= (int) $totalAnggota ?>
-        </h2>
-
-        <p>
-            Anggota terdaftar
-        </p>
-
-        <a href="anggota/list.php" class="btn btn-secondary">
-            Lihat Anggota
-        </a>
-    </div>
-
-    <div class="content-card">
-        <span class="section-label">
-            Sedang Dipinjam
-        </span>
-
-        <h2>
-            <?= (int) $totalDipinjam ?>
-        </h2>
-
-        <p>
-            Transaksi peminjaman aktif
-        </p>
-
-        <a href="peminjaman/riwayat.php" class="btn btn-secondary">
-            Lihat Peminjaman
-        </a>
-    </div>
-
-    <div class="content-card">
-        <span class="section-label">
-            Sudah Dikembalikan
-        </span>
-
-        <h2>
-            <?= (int) $totalDikembalikan ?>
-        </h2>
-
-        <p>
-            Transaksi selesai
-        </p>
-
-        <a href="peminjaman/riwayat.php" class="btn btn-secondary">
-            Lihat Riwayat
-        </a>
-    </div>
-
-    <div class="content-card">
-        <span class="section-label">
-            Terlambat
-        </span>
-
-        <h2>
-            <?= (int) $totalTerlambat ?>
-        </h2>
-
-        <p>
-            Peminjaman melewati jatuh tempo
-        </p>
-
-        <a href="peminjaman/riwayat.php" class="btn btn-secondary">
-            Periksa Riwayat
-        </a>
-    </div>
-
-</section>
-
-<!-- Menu utama -->
-<section class="content-card">
-
-    <h2>
-        Menu Utama
-    </h2>
-
-    <p>
-        Pilih menu untuk mengelola data perpustakaan.
-    </p>
-
-    <div class="form-actions">
-
-        <a href="buku/list.php" class="btn btn-primary">
-            Data Buku
-        </a>
-
-        <a href="anggota/list.php" class="btn btn-primary">
-            Data Anggota
-        </a>
-
-        <a href="peminjaman/tambah.php" class="btn btn-primary">
-            Tambah Peminjaman
-        </a>
-
-        <a href="peminjaman/riwayat.php" class="btn btn-primary">
-            Riwayat Peminjaman
-        </a>
-
-    </div>
-
-</section>
-
-<?php
-
-// Memanggil footer
-require_once 'includes/footer.php';
-
-?>
-
+<?php include __DIR__ . '/includes/footer.php'; ?>

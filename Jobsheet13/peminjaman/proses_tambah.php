@@ -1,183 +1,81 @@
 <?php
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/csrf.php';
+require_once __DIR__ . '/../includes/koneksi.php';
 
-// Memastikan user sudah login
-require_once '../includes/auth.php';
-
-// Admin dan petugas boleh melakukan peminjaman
-require_role(['admin', 'petugas']);
-
-// Memanggil CSRF protection
-require_once '../includes/csrf.php';
-
-// Koneksi database
-require_once '../includes/koneksi.php';
-
-// Hanya menerima metode POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: tambah.php');
     exit;
 }
 
-// Memeriksa token CSRF
-$token = $_POST['csrf_token'] ?? '';
+verify_csrf_token($_POST['csrf_token'] ?? null);
 
-if (
-    !is_string($token) ||
-    !hash_equals(csrf_token(), $token)
-) {
-    http_response_code(403);
-    exit('Token CSRF tidak valid.');
-}
+$anggota_id = (int) ($_POST['anggota_id'] ?? 0);
+$buku_id = (int) ($_POST['buku_id'] ?? 0);
 
-// Mengambil data dari form
-$anggota_id = filter_input(INPUT_POST, 'anggota_id', FILTER_VALIDATE_INT);
-$buku_id = filter_input(INPUT_POST, 'buku_id', FILTER_VALIDATE_INT);
-$tanggal_pinjam = $_POST['tanggal_pinjam'] ?? '';
-$tanggal_jatuh_tempo = $_POST['tanggal_jatuh_tempo'] ?? '';
-
-// Validasi ID
-if (!$anggota_id || !$buku_id) {
-    exit('Anggota dan buku wajib dipilih.');
-}
-
-// Validasi format tanggal
-function tanggalValid($tanggal)
-{
-    if (!is_string($tanggal)) {
-        return false;
-    }
-
-    $date = DateTime::createFromFormat('!Y-m-d', $tanggal);
-
-    return $date && $date->format('Y-m-d') === $tanggal;
-}
-
-if (
-    !tanggalValid($tanggal_pinjam) ||
-    !tanggalValid($tanggal_jatuh_tempo)
-) {
-    exit('Format tanggal tidak valid.');
-}
-
-// Tanggal jatuh tempo tidak boleh sebelum tanggal pinjam
-if ($tanggal_jatuh_tempo < $tanggal_pinjam) {
-    exit('Tanggal jatuh tempo tidak boleh sebelum tanggal pinjam.');
+if ($anggota_id <= 0 || $buku_id <= 0) {
+    $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Anggota dan Buku wajib dipilih.'];
+    header('Location: tambah.php');
+    exit;
 }
 
 try {
+    // TUGAS MANDIRI: Validasi bisnis anggota dengan peminjaman terlambat (> 14 hari)
+    $sqlCekTerlambat = "SELECT COUNT(*) FROM peminjaman 
+                        WHERE anggota_id = :anggota_id 
+                        AND status = 'dipinjam' 
+                        AND CURRENT_DATE > tanggal_jatuh_tempo";
+    $stmtCek = $pdo->prepare($sqlCekTerlambat);
+    $stmtCek->execute(['anggota_id' => $anggota_id]);
+    
+    if ($stmtCek->fetchColumn() > 0) {
+        $_SESSION['flash'] = [
+            'type' => 'error',
+            'pesan' => 'Peminjaman Ditolak! Anggota ini masih memiliki peminjaman buku yang melewati tanggal jatuh tempo.'
+        ];
+        header('Location: tambah.php');
+        exit;
+    }
 
-    // Memulai transaksi database
+    // TRANSAKSI PDO (Jobsheet 12 Langkah 2)
     $pdo->beginTransaction();
 
-    // Memastikan anggota terdaftar
-    $stmtAnggota = $pdo->prepare(
-        "SELECT id
-         FROM anggota
-         WHERE id = :id"
-    );
-
-    $stmtAnggota->execute([
-        ':id' => $anggota_id
-    ]);
-
-    if (!$stmtAnggota->fetch()) {
-        throw new Exception('Anggota tidak ditemukan.');
-    }
-
-    // Memeriksa apakah anggota memiliki pinjaman terlambat
-    $stmtTerlambat = $pdo->prepare(
-        "SELECT id
-         FROM peminjaman
-         WHERE anggota_id = :anggota_id
-           AND status = 'dipinjam'
-           AND tanggal_jatuh_tempo < CURRENT_DATE
-         LIMIT 1"
-    );
-
-    $stmtTerlambat->execute([
-        ':anggota_id' => $anggota_id
-    ]);
-
-    if ($stmtTerlambat->fetch()) {
-        throw new Exception(
-            'Anggota memiliki pinjaman yang terlambat dan belum dikembalikan.'
-        );
-    }
-
-    // Mengunci data buku untuk mencegah stok berkurang bersamaan
-    $stmtBuku = $pdo->prepare(
-        "SELECT id, stok
-         FROM buku
-         WHERE id = :id
-         FOR UPDATE"
-    );
-
-    $stmtBuku->execute([
-        ':id' => $buku_id
-    ]);
-
+    // Cek ketersediaan dan kunci baris stok buku
+    $stmtBuku = $pdo->prepare("SELECT stok FROM buku WHERE id = :id FOR UPDATE");
+    $stmtBuku->execute(['id' => $buku_id]);
     $buku = $stmtBuku->fetch(PDO::FETCH_ASSOC);
 
-    if (!$buku) {
-        throw new Exception('Buku tidak ditemukan.');
+    if (!$buku || $buku['stok'] <= 0) {
+        $pdo->rollBack();
+        $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Stok buku habis atau tidak ditemukan.'];
+        header('Location: tambah.php');
+        exit;
     }
 
-    if ((int) $buku['stok'] <= 0) {
-        throw new Exception('Stok buku sedang tidak tersedia.');
-    }
-
-    // Menyimpan data peminjaman
-    $stmtInsert = $pdo->prepare(
-        "INSERT INTO peminjaman
-            (buku_id, anggota_id, tanggal_pinjam,
-             tanggal_jatuh_tempo, status)
-         VALUES
-            (:buku_id, :anggota_id, :tanggal_pinjam,
-             :tanggal_jatuh_tempo, 'dipinjam')"
-    );
-
+    // 1. Simpan record peminjaman dengan jatuh tempo 14 hari
+    $stmtInsert = $pdo->prepare("INSERT INTO peminjaman (buku_id, anggota_id, tanggal_pinjam, tanggal_jatuh_tempo, status) 
+                                VALUES (:buku_id, :anggota_id, CURRENT_DATE, CURRENT_DATE + INTERVAL '14 days', 'dipinjam')");
     $stmtInsert->execute([
-        ':buku_id' => $buku_id,
-        ':anggota_id' => $anggota_id,
-        ':tanggal_pinjam' => $tanggal_pinjam,
-        ':tanggal_jatuh_tempo' => $tanggal_jatuh_tempo
+        'buku_id' => $buku_id,
+        'anggota_id' => $anggota_id
     ]);
 
-    // Mengurangi stok buku
-    $stmtUpdate = $pdo->prepare(
-        "UPDATE buku
-         SET stok = stok - 1
-         WHERE id = :id
-           AND stok > 0"
-    );
+    // 2. Kurangi stok buku
+    $stmtUpdate = $pdo->prepare("UPDATE buku SET stok = stok - 1 WHERE id = :id");
+    $stmtUpdate->execute(['id' => $buku_id]);
 
-    $stmtUpdate->execute([
-        ':id' => $buku_id
-    ]);
-
-    if ($stmtUpdate->rowCount() !== 1) {
-        throw new Exception('Gagal memperbarui stok buku.');
-    }
-
-    // Menyimpan perubahan
+    // Commit transaksi
     $pdo->commit();
 
-    // Kembali ke halaman riwayat
+    $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Peminjaman berhasil dicatat! Stok buku telah berkurang.'];
     header('Location: riwayat.php');
     exit;
 
 } catch (Exception $e) {
-
-    // Membatalkan perubahan jika terjadi kesalahan
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-
-    http_response_code(400);
-    exit(htmlspecialchars(
-        $e->getMessage(),
-        ENT_QUOTES,
-        'UTF-8'
-    ));
+    $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Gagal memproses peminjaman: ' . $e->getMessage()];
+    header('Location: tambah.php');
+    exit;
 }
-

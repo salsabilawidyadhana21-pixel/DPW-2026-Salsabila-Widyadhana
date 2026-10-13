@@ -1,54 +1,28 @@
 // =====================================================
 // 1. KONFIRMASI LOGOUT
 // =====================================================
+const logoutLinks = document.querySelectorAll('a[href*="logout.php"]');
 
-// Mencari semua tombol/link yang mengarah ke logout
-const logoutLinks = document.querySelectorAll(
-    'a[href*="logout.php"]'
-);
-
-
-// Memberikan konfirmasi sebelum logout
 logoutLinks.forEach(function (link) {
-
     link.addEventListener('click', function (event) {
-
-        const yakin = confirm(
-            'Apakah Anda yakin ingin logout?'
-        );
-
-
-        // Jika user memilih Cancel,
-        // proses logout dibatalkan
+        const yakin = confirm('Apakah Anda yakin ingin keluar dari sistem?');
         if (!yakin) {
             event.preventDefault();
         }
-
     });
-
 });
 
-
 // =====================================================
-// 2. HAMBURGER MENU
+// 2. TOGGLE HAMBURGER MENU RESPONSIVE
 // =====================================================
+document.addEventListener('DOMContentLoaded', function () {
+    const toggleBtn = document.getElementById('nav-toggle-btn');
+    const nav = document.querySelector('header nav');
 
-// Mencari tombol hamburger
-const navToggle = document.getElementById('nav-toggle');
-
-// Mencari menu navigasi
-const mainNav = document.getElementById('main-nav');
-
-
-// Memastikan kedua elemen ditemukan
-if (navToggle && mainNav) {
-
-    // Menjalankan fungsi ketika hamburger diklik
-    navToggle.addEventListener('click', function () {
-
-        // Menampilkan / menyembunyikan menu
-        mainNav.classList.toggle('nav-open');
-
-    });
-
-}
+    if (toggleBtn && nav) {
+        toggleBtn.addEventListener('click', function () {
+            nav.classList.toggle('active');
+            nav.classList.toggle('nav-open');
+        });
+    }
+});
