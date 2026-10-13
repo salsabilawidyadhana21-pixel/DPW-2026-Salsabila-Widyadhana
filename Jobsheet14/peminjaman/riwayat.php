@@ -1,210 +1,134 @@
 <?php
+// require_once __DIR__ . '/../includes/auth.php';
+$page_title = "Riwayat Peminjaman";
+include __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/koneksi.php';
 
-// Memastikan user sudah login
-require_once '../includes/auth.php';
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
 
-// Admin dan petugas boleh melihat riwayat
-require_role(['admin', 'petugas']);
-
-// Koneksi database
-require_once '../includes/koneksi.php';
-
-// Judul halaman
-$page_title = 'Riwayat Peminjaman';
-
-// Mengambil data peminjaman beserta buku dan anggota
-$stmt = $pdo->query(
-    "SELECT
-        p.id,
-        p.tanggal_pinjam,
-        p.tanggal_jatuh_tempo,
-        p.tanggal_kembali,
-        p.status,
-        b.judul,
-        a.nama,
-        a.no_anggota
-     FROM peminjaman p
-     INNER JOIN buku b ON p.buku_id = b.id
-     INNER JOIN anggota a ON p.anggota_id = a.id
-     ORDER BY p.id DESC"
-);
-
-$peminjaman = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Memanggil header
-require_once '../includes/header.php';
-
+$query = "
+    SELECT p.*, a.nama AS nama_anggota, b.judul AS judul_buku 
+    FROM peminjaman p
+    JOIN anggota a ON p.anggota_id = a.id
+    JOIN buku b ON p.buku_id = b.id
+    ORDER BY p.id DESC
+";
+$peminjamanList = $pdo->query($query)->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-<section class="page-header">
+<style>
+    .card-box {
+        background: #ffffff;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .card-header-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    .card-header-flex h2 {
+        color: #1d5b8a;
+        margin: 0;
+        font-size: 1.5rem;
+    }
+    .btn-primary {
+        background-color: #1d5b8a;
+        color: #ffffff !important;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
 
-    <div>
-        <span class="section-label">
-            Transaksi Buku
-        </span>
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+    .custom-table th {
+        background-color: #f8f9fa;
+        color: #1d5b8a;
+        text-align: left;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        border-bottom: 2px solid #dee2e6;
+    }
+    .custom-table td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #e9ecef;
+        font-size: 0.9rem;
+        color: #495057;
+    }
+    .custom-table tbody tr:hover {
+        background-color: #f1f5f9;
+    }
 
-        <h1>
-            Riwayat Peminjaman
-        </h1>
+    .badge {
+        padding: 0.25rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        display: inline-block;
+    }
+    .badge-success { background-color: #d4edda; color: #155724; }
+    .badge-warning { background-color: #fff3cd; color: #856404; }
+</style>
 
-        <p>
-            Daftar transaksi peminjaman dan pengembalian buku.
-        </p>
+<div class="card-box">
+    <div class="card-header-flex">
+        <h2>Riwayat Peminjaman Buku</h2>
+        <a href="tambah.php" class="btn-primary">+ Pinjam Buku Baru</a>
     </div>
 
-    <a href="tambah.php" class="btn btn-primary">
-        + Tambah Peminjaman
-    </a>
-
-</section>
-
-<section class="content-card">
-
-    <h2>
-        Data Peminjaman
-    </h2>
-
-    <?php if (count($peminjaman) > 0): ?>
-
-        <div class="table-container">
-
-            <table>
-
-                <thead>
-                    <tr>
-                        <th>No.</th>
-                        <th>Anggota</th>
-                        <th>Buku</th>
-                        <th>Tanggal Pinjam</th>
-                        <th>Jatuh Tempo</th>
-                        <th>Tanggal Kembali</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                    <?php foreach ($peminjaman as $index => $item): ?>
-
-                        <tr>
-
-                            <td>
-                                <?= $index + 1 ?>
-                            </td>
-
-                            <td>
-                                <?= htmlspecialchars(
-                                    $item['nama'],
-                                    ENT_QUOTES,
-                                    'UTF-8'
-                                ) ?>
-
-                                <br>
-
-                                <small>
-                                    <?= htmlspecialchars(
-                                        $item['no_anggota'],
-                                        ENT_QUOTES,
-                                        'UTF-8'
-                                    ) ?>
-                                </small>
-                            </td>
-
-                            <td>
-                                <?= htmlspecialchars(
-                                    $item['judul'],
-                                    ENT_QUOTES,
-                                    'UTF-8'
-                                ) ?>
-                            </td>
-
-                            <td>
-                                <?= htmlspecialchars(
-                                    $item['tanggal_pinjam'],
-                                    ENT_QUOTES,
-                                    'UTF-8'
-                                ) ?>
-                            </td>
-
-                            <td>
-                                <?= htmlspecialchars(
-                                    $item['tanggal_jatuh_tempo'],
-                                    ENT_QUOTES,
-                                    'UTF-8'
-                                ) ?>
-                            </td>
-
-                            <td>
-                                <?= $item['tanggal_kembali']
-                                    ? htmlspecialchars(
-                                        $item['tanggal_kembali'],
-                                        ENT_QUOTES,
-                                        'UTF-8'
-                                    )
-                                    : '-' ?>
-                            </td>
-
-                            <td>
-                                <?php if ($item['status'] === 'dikembalikan'): ?>
-
-                                    <span class="status-badge status-success">
-                                        Dikembalikan
-                                    </span>
-
-                                <?php else: ?>
-
-                                    <span class="status-badge status-warning">
-                                        Dipinjam
-                                    </span>
-
-                                <?php endif; ?>
-                            </td>
-
-                            <td>
-
-                                <?php if ($item['status'] === 'dipinjam'): ?>
-
-                                    <a
-                                        href="kembali.php?id=<?= (int) $item['id'] ?>"
-                                        class="btn btn-secondary">
-
-                                        Kembalikan
-
-                                    </a>
-
-                                <?php else: ?>
-
-                                    <span>-</span>
-
-                                <?php endif; ?>
-
-                            </td>
-
-                        </tr>
-
-                    <?php endforeach; ?>
-
-                </tbody>
-
-            </table>
-
+    <?php if ($flash): ?>
+        <div style="padding: 0.75rem 1rem; border-radius: 4px; margin-bottom: 1rem; background-color: <?php echo ($flash['type'] ?? '') === 'error' ? '#f8d7da' : '#d4edda'; ?>; color: <?php echo ($flash['type'] ?? '') === 'error' ? '#721c24' : '#155724'; ?>;">
+            <?php echo htmlspecialchars($flash['pesan'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
         </div>
-
-    <?php else: ?>
-
-        <p>
-            Belum ada data peminjaman.
-        </p>
-
     <?php endif; ?>
 
-</section>
+    <div style="overflow-x: auto;">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Anggota</th>
+                    <th>Judul Buku</th>
+                    <th>Tgl Pinjam</th>
+                    <th>Jatuh Tempo</th>
+                    <th>Tgl Kembali</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($peminjamanList)): ?>
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: #888;">Belum ada riwayat peminjaman.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php $no = 1; foreach ($peminjamanList as $p): ?>
+                        <tr>
+                            <td><?php echo $no++; ?></td>
+                            <td><?php echo htmlspecialchars($p['nama_anggota'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><strong><?php echo htmlspecialchars($p['judul_buku'], ENT_QUOTES, 'UTF-8'); ?></strong></td>
+                            <td><?php echo htmlspecialchars($p['tanggal_pinjam'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?php echo htmlspecialchars($p['tanggal_jatuh_tempo'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?php echo htmlspecialchars($p['tanggal_kembali'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td>
+                                <span class="badge <?php echo ($p['status'] ?? '') === 'dikembalikan' ? 'badge-success' : 'badge-warning'; ?>">
+                                    <?php echo htmlspecialchars(ucfirst($p['status'] ?? 'dipinjam'), ENT_QUOTES, 'UTF-8'); ?>
+                                </span>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
 
-<?php
-
-// Memanggil footer
-require_once '../includes/footer.php';
-
-?>
-
+<?php include __DIR__ . '/../includes/footer.php'; ?>

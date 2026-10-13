@@ -28,7 +28,7 @@
                     // Mengarahkan langsung ke folder Jobsheet masing-masing
                     $path = "/Jobsheet" . $i . "/index.php";
                     
-                    // Tandai Jobsheet yang sudah aktif (Nanti kalau Jobsheet 13 & 14 selesai, cukup tambahkan angkanya di sini)
+                    // Tandai Jobsheet yang sudah aktif 
                     $isReady = in_array($i, [10, 11, 12, 13, 14]); 
                 ?>
                 <a href="<?= $path ?>" class="card <?= $isReady ? 'active' : 'disabled' ?>">

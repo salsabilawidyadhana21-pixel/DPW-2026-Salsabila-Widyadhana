@@ -1,6 +1,6 @@
 <?php
 
-// Menentukan folder utama jobsheet
+// Menentukan folder utama Jobsheet 
 $base_path = '/Jobsheet14';
 
 ?>
