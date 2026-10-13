@@ -7,29 +7,38 @@ require_once __DIR__ . '/../includes/koneksi.php';
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
-$perPage = 5;
-$page = max(1, (int) ($_GET['page'] ?? 1));
-$offset = ($page - 1) * $perPage;
-$keyword = trim($_GET['q'] ?? '');
+// Fitur Pencarian & Pagination
+$search = trim($_GET['search'] ?? '');
+$page = max(1, (int)($_GET['page'] ?? 1));
+$limit = 5;
+$offset = ($page - 1) * $limit;
 
-if ($keyword !== '') {
-    $hitung = $pdo->prepare("SELECT COUNT(*) FROM buku WHERE (status IS NULL OR status = 'Aktif') AND judul ILIKE :kw");
-    $hitung->execute(['kw' => '%' . $keyword . '%']);
-    $totalRows = $hitung->fetchColumn();
-
-    $stmt = $pdo->prepare("SELECT * FROM buku WHERE (status IS NULL OR status = 'Aktif') AND judul ILIKE :kw ORDER BY id DESC LIMIT :limit OFFSET :offset");
-    $stmt->bindValue('kw', '%' . $keyword . '%');
+// Query Hitung Total Data
+if ($search !== '') {
+    $stmtCount = $pdo->prepare("SELECT COUNT(*) FROM buku WHERE judul ILIKE :search OR pengarang ILIKE :search");
+    $stmtCount->execute(['search' => "%{$search}%"]);
 } else {
-    $totalRows = $pdo->query("SELECT COUNT(*) FROM buku WHERE status IS NULL OR status = 'Aktif'")->fetchColumn();
-    $stmt = $pdo->prepare("SELECT * FROM buku WHERE status IS NULL OR status = 'Aktif' ORDER BY id DESC LIMIT :limit OFFSET :offset");
+    $stmtCount = $pdo->query("SELECT COUNT(*) FROM buku");
 }
-$stmt->bindValue('limit', $perPage, PDO::PARAM_INT);
-$stmt->bindValue('offset', $offset, PDO::PARAM_INT);
-$stmt->execute();
+$totalRows = (int)$stmtCount->fetchColumn();
+$totalPages = ceil($totalRows / $limit);
 
-$daftarBuku = $stmt->fetchAll(PDO::FETCH_ASSOC);
-$totalPages = max(1, (int) ceil($totalRows / $perPage));
+// Query Ambil Data Buku
+if ($search !== '') {
+    $stmt = $pdo->prepare("SELECT * FROM buku WHERE judul ILIKE :search OR pengarang ILIKE :search ORDER BY id DESC LIMIT :limit OFFSET :offset");
+    $stmt->bindValue(':search', "%{$search}%", PDO::PARAM_STR);
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+} else {
+    $stmt = $pdo->prepare("SELECT * FROM buku ORDER BY id DESC LIMIT :limit OFFSET :offset");
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+}
+$bukuList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 <section>
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
         <h2>Daftar Buku</h2>
@@ -42,9 +51,9 @@ $totalPages = max(1, (int) ceil($totalRows / $perPage));
         </p>
     <?php endif; ?>
 
-    <form method="get" action="list.php" style="margin-bottom: 1rem;">
-        <input type="text" name="q" value="<?php echo htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Cari judul buku..." style="padding: 0.5rem; width: 250px;">
-        <button type="submit" style="padding: 0.5rem 1rem;">Cari</button>
+    <form method="get" action="list.php" style="margin-bottom: 1rem; display: flex; gap: 0.5rem;">
+        <input type="text" name="search" placeholder="Cari judul atau pengarang..." value="<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>" style="padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; width: 250px;">
+        <button type="submit" style="padding: 0.5rem 1rem; background-color: #f0f0f0; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;">Cari</button>
     </form>
 
     <div class="table-responsive">
@@ -57,24 +66,36 @@ $totalPages = max(1, (int) ceil($totalRows / $perPage));
                     <th>Tahun</th>
                     <th>ISBN</th>
                     <th>Stok</th>
+                    <th>Status</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                <?php if (empty($daftarBuku)): ?>
-                    <tr><td colspan="7" style="text-align: center;">Tidak ada data buku.</td></tr>
+                <?php if (empty($bukuList)): ?>
+                    <tr>
+                        <td colspan="8" style="text-align: center;">Tidak ada data buku.</td>
+                    </tr>
                 <?php else: ?>
-                    <?php $no = $offset + 1; foreach ($daftarBuku as $b): ?>
+                    <?php $no = $offset + 1; foreach ($bukuList as $b): ?>
+                        <?php $status = $b['status'] ?? 'Aktif'; ?>
                         <tr>
                             <td><?php echo $no++; ?></td>
                             <td><?php echo htmlspecialchars($b['judul'], ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><?php echo htmlspecialchars($b['pengarang'], ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td><?php echo htmlspecialchars($b['tahun'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?php echo htmlspecialchars($b['tahun_terbit'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><?php echo htmlspecialchars($b['isbn'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td><strong><?php echo (int) $b['stok']; ?></strong></td>
+                            <td><strong><?php echo htmlspecialchars($b['stok'], ENT_QUOTES, 'UTF-8'); ?></strong></td>
                             <td>
-                                <a href="edit.php?id=<?php echo $b['id']; ?>">Edit</a> | 
-                                <a href="hapus.php?id=<?php echo $b['id']; ?>" onclick="return confirm('Yakin hapus buku ini?');" style="color: red;">Hapus</a>
+                                <span style="color: <?php echo $status === 'Aktif' ? 'green' : 'red'; ?>; font-weight: bold;">
+                                    <?php echo htmlspecialchars($status, ENT_QUOTES, 'UTF-8'); ?>
+                                </span>
+                            </td>
+                            <td>
+                                <a href="edit.php?id=<?php echo $b['id']; ?>" style="color: #1d5b8a; text-decoration: none;">Edit</a> | 
+                                <a href="toggle_status.php?id=<?php echo $b['id']; ?>" onclick="return confirm('Ubah status buku ini?');" style="color: #1d5b8a; text-decoration: none;">
+                                    <?php echo $status === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'; ?>
+                                </a> | 
+                                <a href="hapus.php?id=<?php echo $b['id']; ?>" onclick="return confirm('Apakah Anda yakin ingin menghapus buku ini?');" style="color: red; text-decoration: none;">Hapus</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -83,10 +104,14 @@ $totalPages = max(1, (int) ceil($totalRows / $perPage));
         </table>
     </div>
 
+    <!-- Navigasi Pagination -->
     <?php if ($totalPages > 1): ?>
-        <div style="margin-top: 1rem;">
+        <div style="margin-top: 1rem; display: flex; gap: 0.25rem;">
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <a href="list.php?page=<?php echo $i; ?>&q=<?php echo urlencode($keyword); ?>" style="padding: 0.25rem 0.5rem; border: 1px solid #ccc; <?php echo $i === $page ? 'background: #1d5b8a; color: white;' : ''; ?>"><?php echo $i; ?></a>
+                <a href="list.php?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>" 
+                   style="padding: 0.3rem 0.6rem; border: 1px solid #ccc; text-decoration: none; border-radius: 3px; <?php echo $i === $page ? 'background-color: #1d5b8a; color: white;' : 'color: #333;'; ?>">
+                    <?php echo $i; ?>
+                </a>
             <?php endfor; ?>
         </div>
     <?php endif; ?>
