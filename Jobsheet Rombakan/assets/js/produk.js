@@ -28,7 +28,7 @@ async function loadDataProduk() {
                 "<td>" + item.kategori + "</td>" +
                 "<td>Rp " + item.harga + "</td>" +
                 "<td>" + item.stok + "</td>" +
-                "<td>" + item.diskon + "</td>" +
+                 "<td>" + item.diskon + "</td>" +
                 "<td>" +
                 "<button type='button'>Edit</button> " +
                 "<button type='button' class='btn-hapus'>Hapus</button>" +
