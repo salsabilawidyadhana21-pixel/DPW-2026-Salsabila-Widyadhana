@@ -1,368 +1,95 @@
 <?php
+require_once __DIR__ . '/../includes/auth.php';
+$page_title = "Daftar Buku";
+include __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/koneksi.php';
 
-// =====================================================
-// MEMASTIKAN USER SUDAH LOGIN
-// =====================================================
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
 
-require_once '../includes/auth.php';
+$perPage = 5;
+$page = max(1, (int) ($_GET['page'] ?? 1));
+$offset = ($page - 1) * $perPage;
+$keyword = trim($_GET['q'] ?? '');
 
-
-// =====================================================
-// HANYA ADMIN DAN PETUGAS YANG BOLEH MENGAKSES DATA BUKU
-// =====================================================
-
-require_role(['admin', 'petugas']);
-
-
-// =====================================================
-// KONEKSI DATABASE
-// =====================================================
-
-require_once '../includes/koneksi.php';
-
-
-// =====================================================
-// CSRF PROTECTION
-// =====================================================
-
-require_once '../includes/csrf.php';
-
-
-// Judul halaman
-$page_title = 'Data Buku';
-
-
-// Memanggil header
-require_once '../includes/header.php';
-
-
-// =====================================================
-// SEARCH
-// =====================================================
-
-$keyword = trim($_GET['keyword'] ?? '');
-
-
-// Jika ada keyword pencarian
 if ($keyword !== '') {
+    $hitung = $pdo->prepare("SELECT COUNT(*) FROM buku WHERE (status IS NULL OR status = 'Aktif') AND judul ILIKE :kw");
+    $hitung->execute(['kw' => '%' . $keyword . '%']);
+    $totalRows = $hitung->fetchColumn();
 
-    $sql = "
-        SELECT *
-        FROM buku
-        WHERE judul ILIKE :keyword
-           OR pengarang ILIKE :keyword
-           OR isbn ILIKE :keyword
-           OR kategori ILIKE :keyword
-        ORDER BY id DESC
-    ";
-
-    $stmt = $pdo->prepare($sql);
-
-    $stmt->execute([
-        ':keyword' => '%' . $keyword . '%'
-    ]);
-
-
-// Jika tidak ada pencarian
+    $stmt = $pdo->prepare("SELECT * FROM buku WHERE (status IS NULL OR status = 'Aktif') AND judul ILIKE :kw ORDER BY id DESC LIMIT :limit OFFSET :offset");
+    $stmt->bindValue('kw', '%' . $keyword . '%');
 } else {
-
-    $sql = "
-        SELECT *
-        FROM buku
-        ORDER BY id DESC
-    ";
-
-    // Query aman karena tidak mengandung
-    // input dari user
-    $stmt = $pdo->query($sql);
+    $totalRows = $pdo->query("SELECT COUNT(*) FROM buku WHERE status IS NULL OR status = 'Aktif'")->fetchColumn();
+    $stmt = $pdo->prepare("SELECT * FROM buku WHERE status IS NULL OR status = 'Aktif' ORDER BY id DESC LIMIT :limit OFFSET :offset");
 }
+$stmt->bindValue('limit', $perPage, PDO::PARAM_INT);
+$stmt->bindValue('offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
 
-
-// Mengambil semua data buku
-$buku = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+$daftarBuku = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$totalPages = max(1, (int) ceil($totalRows / $perPage));
 ?>
-
-
-<section class="page-header">
-
-    <div>
-
-        <span class="section-label">
-            SIMPUS-Mini
-        </span>
-
-        <h1>
-            Data Buku
-        </h1>
-
-        <p>
-            Kelola data buku perpustakaan.
-        </p>
-
+<section>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2>Daftar Buku</h2>
+        <a href="tambah.php" style="background-color: #1d5b8a; color: white; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none;">+ Tambah Buku</a>
     </div>
 
+    <?php if ($flash): ?>
+        <p class="flash flash-<?php echo htmlspecialchars($flash['type'] ?? 'info', ENT_QUOTES, 'UTF-8'); ?>" style="padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; background-color: <?php echo ($flash['type'] ?? '') === 'error' ? '#f8d7da' : '#d4edda'; ?>; color: <?php echo ($flash['type'] ?? '') === 'error' ? '#721c24' : '#155724'; ?>;">
+            <?php echo htmlspecialchars($flash['pesan'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
+        </p>
+    <?php endif; ?>
 
-    <!-- Tombol tambah buku -->
-    <a
-        href="tambah.php"
-        class="btn btn-primary">
-
-        + Tambah Buku
-
-    </a>
-
-</section>
-
-
-<section class="content-card">
-
-
-    <!-- =================================================
-         FORM SEARCH
-         ================================================= -->
-
-    <form
-        method="GET"
-        class="search-box">
-
-
-        <input
-            type="text"
-            name="keyword"
-            placeholder="Cari buku..."
-            value="<?= htmlspecialchars($keyword) ?>"
-            maxlength="100">
-
-
-        <button
-            type="submit"
-            class="btn btn-primary">
-
-            Cari
-
-        </button>
-
-
-        <?php if ($keyword !== ''): ?>
-
-            <a
-                href="list.php"
-                class="btn btn-secondary">
-
-                Reset
-
-            </a>
-
-        <?php endif; ?>
-
-
+    <form method="get" action="list.php" style="margin-bottom: 1rem;">
+        <input type="text" name="q" value="<?php echo htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Cari judul buku..." style="padding: 0.5rem; width: 250px;">
+        <button type="submit" style="padding: 0.5rem 1rem;">Cari</button>
     </form>
 
-
-    <!-- =================================================
-         TABEL DATA BUKU
-         ================================================= -->
-
     <div class="table-responsive">
-
-        <table>
-
+        <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
             <thead>
-
-                <tr>
-
+                <tr style="background-color: #f2f2f2;">
                     <th>No</th>
                     <th>Judul</th>
                     <th>Pengarang</th>
                     <th>Tahun</th>
                     <th>ISBN</th>
                     <th>Stok</th>
-                    <th>Kategori</th>
-                    <th>Status</th> <!-- Ditambahkan: Header Status -->
                     <th>Aksi</th>
-
                 </tr>
-
             </thead>
-
-
             <tbody>
-
-
-                <?php if (count($buku) > 0): ?>
-
-
-                    <?php foreach ($buku as $index => $data): ?>
-
-
-                        <tr>
-
-
-                            <!-- Nomor -->
-                            <td>
-                                <?= $index + 1 ?>
-                            </td>
-
-
-                            <!-- Judul -->
-                            <td>
-                                <?= htmlspecialchars($data['judul']) ?>
-                            </td>
-
-
-                            <!-- Pengarang -->
-                            <td>
-                                <?= htmlspecialchars($data['pengarang']) ?>
-                            </td>
-
-
-                            <!-- Tahun -->
-                            <td>
-                                <?= (int) $data['tahun'] ?>
-                            </td>
-
-
-                            <!-- ISBN -->
-                            <td>
-                                <?= htmlspecialchars($data['isbn'] ?? '-') ?>
-                            </td>
-
-
-                            <!-- Stok -->
-                            <td>
-                                <?= (int) $data['stok'] ?>
-                            </td>
-
-
-                            <!-- Kategori -->
-                            <td>
-                                <?= htmlspecialchars($data['kategori'] ?? '-') ?>
-                            </td>
-
-
-                            <!-- Status (Ditambahkan) -->
-                            <td>
-                                <?php $status = $data['status'] ?? 'Aktif'; ?>
-                                <span style="color: <?= $status == 'Aktif' ? 'green' : 'red' ?>; font-weight: bold;">
-                                    <?= htmlspecialchars($status) ?>
-                                </span>
-                            </td>
-
-
-                            <!-- Aksi -->
-                            <td>
-
-
-                                <!-- =========================
-                                     TOMBOL EDIT
-                                     ========================= -->
-
-                                <a
-                                    href="edit.php?id=<?= (int) $data['id'] ?>"
-                                    class="btn btn-edit">
-
-                                    Edit
-
-                                </a>
-
-
-                                <!-- =========================
-                                     TOMBOL TOGGLE STATUS (NONAKTIF/AKTIF)
-                                     ========================= -->
-                                <?php if (($data['status'] ?? 'Aktif') == 'Aktif'): ?>
-                                    <a href="toggle_status.php?id=<?= (int) $data['id'] ?>&status=Nonaktif" 
-                                       class="btn" style="background-color: #f0ad4e; color: #fff;"
-                                       onclick="return confirm('Yakin ingin menonaktifkan buku ini?');">
-                                       Nonaktifkan
-                                    </a>
-                                <?php else: ?>
-                                    <a href="toggle_status.php?id=<?= (int) $data['id'] ?>&status=Aktif" 
-                                       class="btn" style="background-color: #5cb85c; color: #fff;"
-                                       onclick="return confirm('Yakin ingin mengaktifkan kembali buku ini?');">
-                                       Aktifkan
-                                    </a>
-                                <?php endif; ?>
-
-
-                                <!-- =========================
-                                     FORM HAPUS
-                                     ========================= -->
-
-                                <form
-                                    action="hapus.php"
-                                    method="POST"
-                                    style="display: inline;">
-
-
-                                    <!-- ID buku -->
-                                    <input
-                                        type="hidden"
-                                        name="id"
-                                        value="<?= (int) $data['id'] ?>">
-
-
-                                    <!-- Token CSRF -->
-                                    <input
-                                        type="hidden"
-                                        name="csrf_token"
-                                        value="<?= htmlspecialchars(csrf_token()) ?>">
-
-
-                                    <!-- Tombol hapus -->
-                                    <button
-                                        type="submit"
-                                        class="btn btn-hapus"
-                                        onclick="return confirm('Yakin ingin menghapus data buku ini?');">
-
-                                        Hapus
-
-                                    </button>
-
-
-                                </form>
-
-
-                            </td>
-
-
-                        </tr>
-
-
-                    <?php endforeach; ?>
-
-
+                <?php if (empty($daftarBuku)): ?>
+                    <tr><td colspan="7" style="text-align: center;">Tidak ada data buku.</td></tr>
                 <?php else: ?>
-
-
-                    <tr>
-
-                        <td
-                            colspan="9"
-                            style="text-align: center;">
-
-                            Data buku tidak ditemukan.
-
-                        </td>
-
-                    </tr>
-
-
+                    <?php $no = $offset + 1; foreach ($daftarBuku as $b): ?>
+                        <tr>
+                            <td><?php echo $no++; ?></td>
+                            <td><?php echo htmlspecialchars($b['judul'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?php echo htmlspecialchars($b['pengarang'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?php echo htmlspecialchars($b['tahun'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?php echo htmlspecialchars($b['isbn'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><strong><?php echo (int) $b['stok']; ?></strong></td>
+                            <td>
+                                <a href="edit.php?id=<?php echo $b['id']; ?>">Edit</a> | 
+                                <a href="hapus.php?id=<?php echo $b['id']; ?>" onclick="return confirm('Yakin hapus buku ini?');" style="color: red;">Hapus</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php endif; ?>
-
-
             </tbody>
-
         </table>
-
     </div>
 
+    <?php if ($totalPages > 1): ?>
+        <div style="margin-top: 1rem;">
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <a href="list.php?page=<?php echo $i; ?>&q=<?php echo urlencode($keyword); ?>" style="padding: 0.25rem 0.5rem; border: 1px solid #ccc; <?php echo $i === $page ? 'background: #1d5b8a; color: white;' : ''; ?>"><?php echo $i; ?></a>
+            <?php endfor; ?>
+        </div>
+    <?php endif; ?>
 </section>
 
-
-<?php
-
-// Memanggil footer
-require_once '../includes/footer.php';
-
-?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>
