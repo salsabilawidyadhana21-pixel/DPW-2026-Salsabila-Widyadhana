@@ -1,43 +1,51 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Praktikum Desain & Pemrograman Web</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; padding: 2rem; }
-        .container { max-width: 900px; margin: 0 auto; background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        h1 { color: #1d5b8a; margin-bottom: 0.5rem; }
-        p { color: #666; margin-bottom: 1.5rem; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
-        .card { background: #eef4fa; border: 1px solid #d0e1f9; padding: 1.2rem; border-radius: 8px; text-decoration: none; color: #1d5b8a; font-weight: 600; text-align: center; transition: all 0.2s ease; }
-        .card:hover { background: #1d5b8a; color: white; transform: translateY(-3px); }
-        .active { border-color: #1d5b8a; }
-        .disabled { opacity: 0.5; pointer-events: none; background: #f0f0f0; border-color: #ddd; color: #888; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Portal Tugas Praktikum DPW</h1>
-        <p>Salsabila Widyadhana &mdash; Daftar Modul Jobsheet</p>
-        
-        <div class="grid">
-            <?php for ($i = 1; $i <= 14; $i++): ?>
-                <?php 
-                    // Mengarahkan langsung ke folder Jobsheet yang dituju
-                    $path = "/Jobsheet" . $i . "/index.php";
-                    // Tandai Jobsheet yang sudah aktif/siap
-                    $isReady = in_array($i, [11, 12]); 
-                ?>
-                <a href="<?= $path ?>" class="card <?= $isReady ? 'active' : 'disabled' ?>">
-                    Jobsheet <?= $i ?>
-                    <div style="font-size: 0.75rem; font-weight: normal; margin-top: 4px;">
-                        <?= $isReady ? 'Ready' : 'Coming Soon' ?>
-                    </div>
-                </a>
-            <?php endfor; ?>
+<?php
+require_once __DIR__ . '/includes/auth.php';
+$page_title = "Beranda";
+include __DIR__ . '/includes/header.php';
+require_once __DIR__ . '/includes/koneksi.php';
+
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
+
+$totalBuku = (int) $pdo->query("SELECT COUNT(*) FROM buku")->fetchColumn();
+$totalAnggota = (int) $pdo->query("SELECT COUNT(*) FROM anggota")->fetchColumn();
+
+// Menghitung angka real dari database untuk peminjaman aktif
+$totalPinjam = 0;
+try {
+    $totalPinjam = (int) $pdo->query("SELECT COUNT(*) FROM peminjaman WHERE status = 'dipinjam'")->fetchColumn();
+} catch (Exception $e) {
+    $totalPinjam = 0;
+}
+?>
+
+<section class="welcome-section">
+    <h2>Selamat Datang di Sistem Perpustakaan Mini</h2>
+    <p>Aplikasi sederhana untuk mengelola data buku, anggota, serta transaksi peminjaman perpustakaan.</p>
+
+    <?php if ($flash): ?>
+        <p class="flash flash-<?php echo htmlspecialchars($flash['type'] ?? 'info', ENT_QUOTES, 'UTF-8'); ?>" style="padding: 0.75rem; border-radius: 4px; margin-top: 1rem; background-color: <?php echo ($flash['type'] ?? '') === 'error' ? '#f8d7da' : '#d4edda'; ?>; color: <?php echo ($flash['type'] ?? '') === 'error' ? '#721c24' : '#155724'; ?>;">
+            <?php echo htmlspecialchars($flash['pesan'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
+        </p>
+    <?php endif; ?>
+</section>
+
+<section class="summary-section">
+    <h3>Ringkasan Real-Time</h3>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Buku</h3>
+            <p><?php echo $totalBuku; ?></p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Anggota</h3>
+            <p><?php echo $totalAnggota; ?></p>
+        </div>
+        <div class="stat-card">
+            <h3>Sedang Dipinjam</h3>
+            <p><?php echo $totalPinjam; ?></p>
         </div>
     </div>
-</body>
-</html>
+</section>
+
+<?php include __DIR__ . '/includes/footer.php'; ?>
