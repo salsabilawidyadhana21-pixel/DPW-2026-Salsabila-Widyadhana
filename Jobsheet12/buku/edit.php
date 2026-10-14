@@ -1,4 +1,6 @@
 <?php
+ob_start();
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -11,13 +13,11 @@ if (!isset($_SESSION['user']) && !isset($_SESSION['user_id'])) {
     header('Location: ../auth/login.php');
     exit;
 }
-?>
 
-<?php
 require_once __DIR__ . '/../includes/auth.php';
-$page_title = "Edit Buku";
-include __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/koneksi.php';
+
+$page_title = "Edit Buku";
 
 $id = (int) ($_GET['id'] ?? 0);
 if ($id <= 0) {
@@ -37,13 +37,16 @@ if (!$buku) {
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+
+include __DIR__ . '/../includes/header.php';
 ?>
+
 <section>
     <h2>Edit Buku</h2>
 
     <form method="post" action="proses_edit.php">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
-        <input type="hidden" name="id" value="<?php echo $buku['id']; ?>">
+        <input type="hidden" name="id" value="<?php echo (int)$buku['id']; ?>">
 
         <p><label>Judul Buku:</label><br><input type="text" name="judul" value="<?php echo htmlspecialchars($buku['judul'], ENT_QUOTES, 'UTF-8'); ?>" required style="width: 100%; max-width: 400px; padding: 0.5rem;"></p>
         <p><label>Pengarang:</label><br><input type="text" name="pengarang" value="<?php echo htmlspecialchars($buku['pengarang'], ENT_QUOTES, 'UTF-8'); ?>" required style="width: 100%; max-width: 400px; padding: 0.5rem;"></p>
