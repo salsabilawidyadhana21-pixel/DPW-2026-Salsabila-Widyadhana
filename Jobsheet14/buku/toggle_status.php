@@ -1,8 +1,12 @@
 <?php
+// Output buffering untuk mencegah error "headers already sent"
+ob_start();
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Proteksi Auth: Pastikan user sudah login
 if (!isset($_SESSION['user']) && !isset($_SESSION['user_id'])) {
     $_SESSION['flash'] = [
         'type' => 'error',
@@ -11,38 +15,33 @@ if (!isset($_SESSION['user']) && !isset($_SESSION['user_id'])) {
     header('Location: ../auth/login.php');
     exit;
 }
-?>
 
-<?php
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/csrf.php';
 require_once __DIR__ . '/../includes/koneksi.php';
 
-// Terima request baik dari POST (Form CSRF) maupun GET (Link biasa)
-$id = (int)($_POST['id'] ?? $_GET['id'] ?? 0);
+$id = $_GET['id'] ?? null;
 
-if ($id > 0) {
+if ($id) {
     try {
-        // 1. Ambil status buku saat ini dari database
+        // Ambil status buku saat ini
         $stmt = $pdo->prepare("SELECT status FROM buku WHERE id = :id");
-        $stmt->execute(['id' => $id]);
+        $stmt->execute([':id' => $id]);
         $buku = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($buku) {
-            // 2. Balik statusnya (Jika Nonaktif jadi Aktif, dan sebaliknya)
-            $status_sekarang = $buku['status'] ?? 'Aktif';
-            $status_baru = ($status_sekarang === 'Nonaktif') ? 'Aktif' : 'Nonaktif';
-            
-            // 3. Update ke database
-            $update = $pdo->prepare("UPDATE buku SET status = :status WHERE id = :id");
-            $update->execute([
-                'status' => $status_baru,
-                'id' => $id
+            // Normalisasi & balikkan status
+            $currentStatus = strtolower(trim($buku['status'] ?? 'aktif'));
+            $newStatus = ($currentStatus === 'aktif') ? 'Nonaktif' : 'Aktif';
+
+            // Update status di database
+            $updateStmt = $pdo->prepare("UPDATE buku SET status = :status WHERE id = :id");
+            $updateStmt->execute([
+                ':status' => $newStatus,
+                ':id'     => $id
             ]);
 
             $_SESSION['flash'] = [
                 'type' => 'success',
-                'pesan' => "Status buku berhasil diubah menjadi {$status_baru}."
+                'pesan' => "Status buku berhasil diubah menjadi {$newStatus}."
             ];
         } else {
             $_SESSION['flash'] = [
@@ -53,15 +52,11 @@ if ($id > 0) {
     } catch (PDOException $e) {
         $_SESSION['flash'] = [
             'type' => 'error',
-            'pesan' => 'Gagal mengubah status: ' . $e->getMessage()
+            'pesan' => 'Gagal mengubah status buku: ' . $e->getMessage()
         ];
     }
-} else {
-    $_SESSION['flash'] = [
-        'type' => 'error',
-        'pesan' => 'ID buku tidak valid.'
-    ];
 }
 
+// Redirect kembali ke list.php
 header('Location: list.php');
 exit;
