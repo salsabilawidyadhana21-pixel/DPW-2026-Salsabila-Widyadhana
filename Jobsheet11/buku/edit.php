@@ -1,15 +1,13 @@
-
 <?php
-require __DIR__ . '/../includes/auth.php';
+ob_start();
+
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/koneksi.php';
+
 $page_title = "Edit Buku";
-include __DIR__ . '/../includes/header.php';
-require __DIR__ . '/../includes/koneksi.php';
 
-$flash = $_SESSION['flash'] ?? null;
-unset($_SESSION['flash']);
-
-$id = $_GET['id'] ?? null;
-if (!$id) {
+$id = (int) ($_GET['id'] ?? 0);
+if ($id <= 0) {
     header('Location: list.php');
     exit;
 }
@@ -22,48 +20,24 @@ if (!$buku) {
     header('Location: list.php');
     exit;
 }
+
+include __DIR__ . '/../includes/header.php';
 ?>
-        <section>
-            <h2>Edit Buku</h2>
 
-            <?php if ($flash): ?>
-                <p class="flash flash-<?php echo $flash['type']; ?>"><?php echo $flash['pesan']; ?></p>
-            <?php endif; ?>
+<section>
+    <h2>Edit Buku</h2>
 
-            <form id="form-tambah" method="post" action="proses_edit.php">
-                <?php echo csrf_field(); ?>
-                <input type="hidden" name="id" value="<?php echo (int) $buku['id']; ?>">
-                <p>
-                    <label for="judul">Judul</label><br>
-                    <input type="text" id="judul" name="judul" value="<?php echo e($buku['judul']); ?>" required>
-                </p>
-                <p>
-                    <label for="pengarang">Pengarang</label><br>
-                    <input type="text" id="pengarang" name="pengarang" value="<?php echo e($buku['pengarang']); ?>" required>
-                </p>
-                <p>
-                    <label for="tahun">Tahun Terbit</label><br>
-                    <input type="number" id="tahun" name="tahun" min="1900" max="2026" value="<?php echo $buku['tahun']; ?>" required>
-                </p>
-                <p>
-                    <label for="isbn">ISBN</label><br>
-                    <input type="text" id="isbn" name="isbn" value="<?php echo e($buku['isbn']); ?>">
-                </p>
-                <p>
-                    <label for="stok">Stok</label><br>
-                    <input type="number" id="stok" name="stok" min="0" value="<?php echo $buku['stok']; ?>" required>
-                </p>
-                <p>
-                    <label for="kategori">Kategori</label><br>
-                    <select id="kategori" name="kategori">
-                        <?php foreach (['fiksi' => 'Fiksi', 'non-fiksi' => 'Non-Fiksi', 'referensi' => 'Referensi'] as $value => $label): ?>
-                        <option value="<?php echo $value; ?>" <?php echo $buku['kategori'] === $value ? 'selected' : ''; ?>><?php echo $label; ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </p>
-                <p>
-                    <button type="submit">Update</button>
-                </p>
-            </form>
-        </section>
+    <form method="post" action="proses_edit.php">
+        <input type="hidden" name="id" value="<?php echo (int)$buku['id']; ?>">
+
+        <p><label>Judul Buku:</label><br><input type="text" name="judul" value="<?php echo htmlspecialchars($buku['judul'], ENT_QUOTES, 'UTF-8'); ?>" required style="width: 100%; max-width: 400px; padding: 0.5rem;"></p>
+        <p><label>Pengarang:</label><br><input type="text" name="pengarang" value="<?php echo htmlspecialchars($buku['pengarang'], ENT_QUOTES, 'UTF-8'); ?>" required style="width: 100%; max-width: 400px; padding: 0.5rem;"></p>
+        <p><label>Tahun Terbit:</label><br><input type="number" name="tahun" value="<?php echo htmlspecialchars($buku['tahun'], ENT_QUOTES, 'UTF-8'); ?>" required style="width: 100%; max-width: 400px; padding: 0.5rem;"></p>
+        <p><label>Stok:</label><br><input type="number" name="stok" value="<?php echo htmlspecialchars($buku['stok'], ENT_QUOTES, 'UTF-8'); ?>" min="0" required style="width: 100%; max-width: 400px; padding: 0.5rem;"></p>
+
+        <button type="submit" style="padding: 0.5rem 1.25rem; background-color: #1d5b8a; color: white; border: none; border-radius: 4px; cursor: pointer;">Simpan Perubahan</button>
+    </form>
+    <p style="margin-top: 1rem;"><a href="list.php">&laquo; Batal</a></p>
+</section>
+
 <?php include __DIR__ . '/../includes/footer.php'; ?>
