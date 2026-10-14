@@ -17,11 +17,12 @@ $id = $_GET['id'] ?? null;
 
 if ($id) {
     try {
-        $tgl_kembali = date('Y-m-d');
-        $stmt = $pdo->prepare("UPDATE peminjaman SET status = 'Dikembalikan', tgl_kembali = :tgl_kembali WHERE id = :id");
+        $tanggal_kembali = date('Y-m-d');
+        // Update menggunakan nama kolom tanggal_kembali
+        $stmt = $pdo->prepare("UPDATE peminjaman SET status = 'Dikembalikan', tanggal_kembali = :tanggal_kembali WHERE id = :id");
         $stmt->execute([
-            ':tgl_kembali' => $tgl_kembali,
-            ':id'          => $id
+            ':tanggal_kembali' => $tanggal_kembali,
+            ':id'              => $id
         ]);
 
         $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Buku berhasil dikembalikan!'];
