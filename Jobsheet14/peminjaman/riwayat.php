@@ -42,7 +42,7 @@ $riwayat = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="card-box">
     <div class="card-header-flex">
         <h2>Riwayat Peminjaman Buku</h2>
-        <a href="pinjam.php" class="btn-primary">+ Pinjam Buku Baru</a>
+        <a href="tambah.php" class="btn-primary">+ Pinjam Buku Baru</a>
     </div>
 
     <?php if ($flash): ?>
@@ -107,4 +107,4 @@ $riwayat = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<?php include __DIR__ . '/../includes/footer.php'; ?>s
+<?php include __DIR__ . '/../includes/footer.php'; ?>

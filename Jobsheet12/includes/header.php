@@ -42,7 +42,7 @@ $basePath = '/' . ($parts[0] ?? '');
         <?php if ($isLoggedIn): ?>
             <!-- Hanya tampil jika SUDAH LOGIN -->
             <li><a href="<?php echo $basePath; ?>/anggota/list.php">Daftar Anggota</a></li>
-            <li><a href="<?php echo $basePath; ?>/peminjaman/pinjam.php">Pinjam Buku</a></li>
+            <li><a href="<?php echo $basePath; ?>/peminjaman/tambah.php">Pinjam Buku</a></li>
             <li><a href="<?php echo $basePath; ?>/peminjaman/riwayat.php">Riwayat Peminjaman</a></li>
             <li style="margin-left: 0.8rem; font-size: 0.88rem;">Halo, <strong><?php echo htmlspecialchars($username); ?></strong> (<?php echo htmlspecialchars($role); ?>)</li>
             <li><a href="<?php echo $basePath; ?>/auth/logout.php" class="btn-auth">Logout</a></li>
