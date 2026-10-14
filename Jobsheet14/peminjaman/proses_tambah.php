@@ -17,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $anggota_id     = trim($_POST['anggota_id'] ?? '');
     $buku_id        = trim($_POST['buku_id'] ?? '');
     $tanggal_pinjam = trim($_POST['tgl_pinjam'] ?? $_POST['tanggal_pinjam'] ?? date('Y-m-d'));
-    $tgl_jatuh_tempo = trim($_POST['tgl_jatuh_tempo'] ?? $_POST['jatuh_tempo'] ?? date('Y-m-d', strtotime('+7 days')));
 
     if ($anggota_id === '' || $buku_id === '') {
         $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Anggota dan Buku wajib dipilih!'];
@@ -26,22 +25,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        // Menggunakan nama kolom database yang persis: tanggal_pinjam dan tgl_jatuh_tempo
-        $stmt = $pdo->prepare("INSERT INTO peminjaman (anggota_id, buku_id, tanggal_pinjam, tgl_jatuh_tempo, status) VALUES (:anggota_id, :buku_id, :tanggal_pinjam, :tgl_jatuh_tempo, 'Dipinjam')");
+        // Coba Insert dengan kolom standard (tanggal_pinjam & status)
+        $stmt = $pdo->prepare("INSERT INTO peminjaman (anggota_id, buku_id, tanggal_pinjam, status) VALUES (:anggota_id, :buku_id, :tanggal_pinjam, 'Dipinjam')");
         $stmt->execute([
-            ':anggota_id'      => $anggota_id,
-            ':buku_id'         => $buku_id,
-            ':tanggal_pinjam'  => $tanggal_pinjam,
-            ':tgl_jatuh_tempo' => $tgl_jatuh_tempo
+            ':anggota_id'     => $anggota_id,
+            ':buku_id'        => $buku_id,
+            ':tanggal_pinjam' => $tanggal_pinjam
         ]);
 
         $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Transaksi peminjaman berhasil ditambahkan!'];
         header('Location: riwayat.php');
         exit;
     } catch (PDOException $e) {
-        $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Gagal memproses peminjaman: ' . $e->getMessage()];
-        header('Location: tambah.php');
-        exit;
+        // Jika ternyata nama kolom tanggalnya adalah tgl_pinjam (bukan tanggal_pinjam)
+        try {
+            $stmt = $pdo->prepare("INSERT INTO peminjaman (anggota_id, buku_id, tgl_pinjam, status) VALUES (:anggota_id, :buku_id, :tgl_pinjam, 'Dipinjam')");
+            $stmt->execute([
+                ':anggota_id' => $anggota_id,
+                ':buku_id'    => $buku_id,
+                ':tgl_pinjam' => $tanggal_pinjam
+            ]);
+
+            $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Transaksi peminjaman berhasil ditambahkan!'];
+            header('Location: riwayat.php');
+            exit;
+        } catch (PDOException $ex) {
+            $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Gagal memproses peminjaman: ' . $ex->getMessage()];
+            header('Location: tambah.php');
+            exit;
+        }
     }
 } else {
     header('Location: riwayat.php');
