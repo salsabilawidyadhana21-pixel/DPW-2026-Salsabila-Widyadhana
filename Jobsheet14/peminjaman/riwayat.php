@@ -1,5 +1,4 @@
 <?php
-// require_once __DIR__ . '/../includes/auth.php';
 $page_title = "Riwayat Peminjaman";
 include __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/koneksi.php';
@@ -7,14 +6,14 @@ require_once __DIR__ . '/../includes/koneksi.php';
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
-$query = "
-    SELECT p.*, a.nama AS nama_anggota, b.judul AS judul_buku 
-    FROM peminjaman p
-    JOIN anggota a ON p.anggota_id = a.id
-    JOIN buku b ON p.buku_id = b.id
-    ORDER BY p.id DESC
-";
-$peminjamanList = $pdo->query($query)->fetchAll(PDO::FETCH_ASSOC);
+// Query ambil data riwayat peminjaman beserta nama anggota dan judul buku
+$sql = "SELECT p.*, a.nama AS nama_anggota, b.judul AS judul_buku 
+        FROM peminjaman p
+        JOIN anggota a ON p.anggota_id = a.id
+        JOIN buku b ON p.buku_id = b.id
+        ORDER BY p.id DESC";
+$stmt = $pdo->query($sql);
+$riwayat = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <style>
@@ -54,35 +53,52 @@ $peminjamanList = $pdo->query($query)->fetchAll(PDO::FETCH_ASSOC);
         background-color: #f8f9fa;
         color: #1d5b8a;
         text-align: left;
-        padding: 0.75rem 1rem;
+        padding: 0.8rem 1rem;
         font-size: 0.9rem;
         border-bottom: 2px solid #dee2e6;
     }
     .custom-table td {
-        padding: 0.75rem 1rem;
+        padding: 0.8rem 1rem;
         border-bottom: 1px solid #e9ecef;
-        font-size: 0.9rem;
-        color: #495057;
-    }
-    .custom-table tbody tr:hover {
-        background-color: #f1f5f9;
+        font-size: 0.95rem;
+        color: #333;
     }
 
     .badge {
-        padding: 0.25rem 0.6rem;
+        display: inline-block;
+        padding: 0.35rem 0.65rem;
         border-radius: 4px;
         font-size: 0.8rem;
         font-weight: bold;
+    }
+    .badge-warning {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+    .badge-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .btn-return {
+        background-color: #28a745;
+        color: #ffffff !important;
+        padding: 0.35rem 0.75rem;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: bold;
         display: inline-block;
     }
-    .badge-success { background-color: #d4edda; color: #155724; }
-    .badge-warning { background-color: #fff3cd; color: #856404; }
+    .btn-return:hover {
+        background-color: #218838;
+    }
 </style>
 
 <div class="card-box">
     <div class="card-header-flex">
         <h2>Riwayat Peminjaman Buku</h2>
-        <a href="tambah.php" class="btn-primary">+ Pinjam Buku Baru</a>
+        <a href="pinjam.php" class="btn-primary">+ Pinjam Buku Baru</a>
     </div>
 
     <?php if ($flash): ?>
@@ -102,26 +118,42 @@ $peminjamanList = $pdo->query($query)->fetchAll(PDO::FETCH_ASSOC);
                     <th>Jatuh Tempo</th>
                     <th>Tgl Kembali</th>
                     <th>Status</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                <?php if (empty($peminjamanList)): ?>
+                <?php if (empty($riwayat)): ?>
                     <tr>
-                        <td colspan="7" style="text-align: center; color: #888;">Belum ada riwayat peminjaman.</td>
+                        <td colspan="8" style="text-align: center; color: #888;">Belum ada riwayat peminjaman.</td>
                     </tr>
                 <?php else: ?>
-                    <?php $no = 1; foreach ($peminjamanList as $p): ?>
+                    <?php $no = 1; foreach ($riwayat as $r): ?>
+                        <?php 
+                            $statusClean = strtolower(trim($r['status'] ?? '')); 
+                            $isDipinjam = ($statusClean === 'dipinjam');
+                        ?>
                         <tr>
                             <td><?php echo $no++; ?></td>
-                            <td><?php echo htmlspecialchars($p['nama_anggota'], ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td><strong><?php echo htmlspecialchars($p['judul_buku'], ENT_QUOTES, 'UTF-8'); ?></strong></td>
-                            <td><?php echo htmlspecialchars($p['tanggal_pinjam'], ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td><?php echo htmlspecialchars($p['tanggal_jatuh_tempo'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td><?php echo htmlspecialchars($p['tanggal_kembali'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?php echo htmlspecialchars($r['nama_anggota'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><strong><?php echo htmlspecialchars($r['judul_buku'], ENT_QUOTES, 'UTF-8'); ?></strong></td>
+                            <td><?php echo htmlspecialchars($r['tgl_pinjam'] ?? $r['tanggal_pinjam'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?php echo htmlspecialchars($r['tgl_jatuh_tempo'] ?? $r['jatuh_tempo'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?php echo htmlspecialchars($r['tgl_kembali'] ?? $r['tanggal_kembali'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                             <td>
-                                <span class="badge <?php echo ($p['status'] ?? '') === 'dikembalikan' ? 'badge-success' : 'badge-warning'; ?>">
-                                    <?php echo htmlspecialchars(ucfirst($p['status'] ?? 'dipinjam'), ENT_QUOTES, 'UTF-8'); ?>
+                                <span class="badge <?php echo $isDipinjam ? 'badge-warning' : 'badge-success'; ?>">
+                                    <?php echo ucfirst($r['status']); ?>
                                 </span>
+                            </td>
+                            <td>
+                                <?php if ($isDipinjam): ?>
+                                    <a href="kembali.php?id=<?php echo $r['id']; ?>" 
+                                       onclick="return confirm('Proses pengembalian buku ini?');" 
+                                       class="btn-return">
+                                       Kembalikan
+                                    </a>
+                                <?php else: ?>
+                                    <span style="color: #aa1203; font-size: 0.85rem;">-</span>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
