@@ -1,30 +1,28 @@
 <?php
+ob_start();
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Proteksi Auth
 if (!isset($_SESSION['user']) && !isset($_SESSION['user_id'])) {
-    $_SESSION['flash'] = [
-        'type' => 'error',
-        'pesan' => 'Silakan login terlebih dahulu untuk mengakses halaman ini.'
-    ];
+    $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Silakan login terlebih dahulu.'];
     header('Location: ../auth/login.php');
     exit;
 }
-?>
 
-<?php
-require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/koneksi.php';
 
-$id = (int) ($_GET['id'] ?? 0);
+$id = $_GET['id'] ?? null;
 
-if ($id > 0) {
+if ($id) {
     try {
         $stmt = $pdo->prepare("DELETE FROM anggota WHERE id = :id");
-        $stmt->execute(['id' => $id]);
-        $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Anggota berhasil dihapus.'];
-    } catch (Exception $e) {
+        $stmt->execute([':id' => $id]);
+
+        $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Data anggota berhasil dihapus!'];
+    } catch (PDOException $e) {
         $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Gagal menghapus anggota: ' . $e->getMessage()];
     }
 }

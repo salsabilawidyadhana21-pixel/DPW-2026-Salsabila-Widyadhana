@@ -1,4 +1,3 @@
-
 <?php
 ob_start();
 
@@ -27,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        // Query disesuaikan dengan kolom database (tanggal_pinjam & jatuh_tempo)
         $stmt = $pdo->prepare("INSERT INTO peminjaman (anggota_id, buku_id, tanggal_pinjam, jatuh_tempo, status) VALUES (:anggota_id, :buku_id, :tanggal_pinjam, :jatuh_tempo, 'Dipinjam')");
         $stmt->execute([
             ':anggota_id'     => $anggota_id,
