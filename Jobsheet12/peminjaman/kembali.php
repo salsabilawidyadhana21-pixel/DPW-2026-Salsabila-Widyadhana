@@ -1,4 +1,3 @@
-
 <?php
 ob_start();
 
@@ -19,8 +18,9 @@ $id = $_GET['id'] ?? null;
 if ($id) {
     try {
         $tanggal_kembali = date('Y-m-d');
-        // Update menggunakan nama kolom tanggal_kembali
-        $stmt = $pdo->prepare("UPDATE peminjaman SET status = 'Dikembalikan', tanggal_kembali = :tanggal_kembali WHERE id = :id");
+        
+        // Update status menjadi 'dikembalikan' dan isi tanggal_kembali
+        $stmt = $pdo->prepare("UPDATE peminjaman SET status = 'dikembalikan', tanggal_kembali = :tanggal_kembali WHERE id = :id");
         $stmt->execute([
             ':tanggal_kembali' => $tanggal_kembali,
             ':id'              => $id
@@ -30,6 +30,8 @@ if ($id) {
     } catch (PDOException $e) {
         $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Gagal memproses pengembalian: ' . $e->getMessage()];
     }
+} else {
+    $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'ID peminjaman tidak valid.'];
 }
 
 header('Location: riwayat.php');
