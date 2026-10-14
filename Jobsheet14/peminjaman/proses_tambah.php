@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $anggota_id     = trim($_POST['anggota_id'] ?? '');
     $buku_id        = trim($_POST['buku_id'] ?? '');
     $tanggal_pinjam = trim($_POST['tgl_pinjam'] ?? $_POST['tanggal_pinjam'] ?? date('Y-m-d'));
-    $jatuh_tempo    = trim($_POST['tgl_jatuh_tempo'] ?? $_POST['jatuh_tempo'] ?? date('Y-m-d', strtotime('+7 days')));
+    $tgl_jatuh_tempo = trim($_POST['tgl_jatuh_tempo'] ?? $_POST['jatuh_tempo'] ?? date('Y-m-d', strtotime('+7 days')));
 
     if ($anggota_id === '' || $buku_id === '') {
         $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Anggota dan Buku wajib dipilih!'];
@@ -26,12 +26,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        $stmt = $pdo->prepare("INSERT INTO peminjaman (anggota_id, buku_id, tanggal_pinjam, jatuh_tempo, status) VALUES (:anggota_id, :buku_id, :tanggal_pinjam, :jatuh_tempo, 'Dipinjam')");
+        // Menggunakan nama kolom database yang persis: tanggal_pinjam dan tgl_jatuh_tempo
+        $stmt = $pdo->prepare("INSERT INTO peminjaman (anggota_id, buku_id, tanggal_pinjam, tgl_jatuh_tempo, status) VALUES (:anggota_id, :buku_id, :tanggal_pinjam, :tgl_jatuh_tempo, 'Dipinjam')");
         $stmt->execute([
-            ':anggota_id'     => $anggota_id,
-            ':buku_id'        => $buku_id,
-            ':tanggal_pinjam' => $tanggal_pinjam,
-            ':jatuh_tempo'    => $jatuh_tempo
+            ':anggota_id'      => $anggota_id,
+            ':buku_id'         => $buku_id,
+            ':tanggal_pinjam'  => $tanggal_pinjam,
+            ':tgl_jatuh_tempo' => $tgl_jatuh_tempo
         ]);
 
         $_SESSION['flash'] = ['type' => 'success', 'pesan' => 'Transaksi peminjaman berhasil ditambahkan!'];
