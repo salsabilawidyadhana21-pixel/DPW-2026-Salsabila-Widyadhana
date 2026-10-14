@@ -1,4 +1,14 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!isset($_SESSION['user']) && !isset($_SESSION['user_id'])) {
+    $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Silakan login terlebih dahulu untuk mengakses halaman ini.'];
+    header('Location: ../auth/login.php');
+    exit;
+}
+
 $page_title = "Riwayat Peminjaman";
 include __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/koneksi.php';
@@ -6,7 +16,6 @@ require_once __DIR__ . '/../includes/koneksi.php';
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
-// Query ambil data riwayat peminjaman beserta nama anggota dan judul buku
 $sql = "SELECT p.*, a.nama AS nama_anggota, b.judul AS judul_buku 
         FROM peminjaman p
         JOIN anggota a ON p.anggota_id = a.id
@@ -17,82 +26,17 @@ $riwayat = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <style>
-    .card-box {
-        background: #ffffff;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-    .card-header-flex {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-    }
-    .card-header-flex h2 {
-        color: #1d5b8a;
-        margin: 0;
-        font-size: 1.5rem;
-    }
-    .btn-primary {
-        background-color: #1d5b8a;
-        color: #ffffff !important;
-        padding: 0.5rem 1rem;
-        border-radius: 4px;
-        text-decoration: none;
-        font-weight: bold;
-        font-size: 0.9rem;
-    }
-
-    .custom-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 1rem;
-    }
-    .custom-table th {
-        background-color: #f8f9fa;
-        color: #1d5b8a;
-        text-align: left;
-        padding: 0.8rem 1rem;
-        font-size: 0.9rem;
-        border-bottom: 2px solid #dee2e6;
-    }
-    .custom-table td {
-        padding: 0.8rem 1rem;
-        border-bottom: 1px solid #e9ecef;
-        font-size: 0.95rem;
-        color: #333;
-    }
-
-    .badge {
-        display: inline-block;
-        padding: 0.35rem 0.65rem;
-        border-radius: 4px;
-        font-size: 0.8rem;
-        font-weight: bold;
-    }
-    .badge-warning {
-        background-color: #fff3cd;
-        color: #856404;
-    }
-    .badge-success {
-        background-color: #d4edda;
-        color: #155724;
-    }
-
-    .btn-return {
-        background-color: #28a745;
-        color: #ffffff !important;
-        padding: 0.35rem 0.75rem;
-        border-radius: 4px;
-        text-decoration: none;
-        font-size: 0.85rem;
-        font-weight: bold;
-        display: inline-block;
-    }
-    .btn-return:hover {
-        background-color: #218838;
-    }
+    .card-box { background: #ffffff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .card-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .card-header-flex h2 { color: #1d5b8a; margin: 0; font-size: 1.5rem; }
+    .btn-primary { background-color: #1d5b8a; color: #ffffff !important; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 0.9rem; }
+    .custom-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    .custom-table th { background-color: #f8f9fa; color: #1d5b8a; text-align: left; padding: 0.8rem 1rem; font-size: 0.9rem; border-bottom: 2px solid #dee2e6; }
+    .custom-table td { padding: 0.8rem 1rem; border-bottom: 1px solid #e9ecef; font-size: 0.95rem; color: #333; }
+    .badge { display: inline-block; padding: 0.35rem 0.65rem; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+    .badge-warning { background-color: #fff3cd; color: #856404; }
+    .badge-success { background-color: #d4edda; color: #155724; }
+    .btn-return { background-color: #28a745; color: #ffffff !important; padding: 0.35rem 0.75rem; border-radius: 4px; text-decoration: none; font-size: 0.85rem; font-weight: bold; display: inline-block; }
 </style>
 
 <div class="card-box">
@@ -163,4 +107,4 @@ $riwayat = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<?php include __DIR__ . '/../includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>s

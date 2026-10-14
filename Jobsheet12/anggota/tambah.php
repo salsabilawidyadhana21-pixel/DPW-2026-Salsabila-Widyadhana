@@ -1,4 +1,19 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!isset($_SESSION['user']) && !isset($_SESSION['user_id'])) {
+    $_SESSION['flash'] = [
+        'type' => 'error',
+        'pesan' => 'Silakan login terlebih dahulu untuk mengakses halaman ini.'
+    ];
+    header('Location: ../auth/login.php');
+    exit;
+}
+?>
+
+<?php
 require_once __DIR__ . '/../includes/auth.php';
 $page_title = "Tambah Anggota";
 include __DIR__ . '/../includes/header.php';
