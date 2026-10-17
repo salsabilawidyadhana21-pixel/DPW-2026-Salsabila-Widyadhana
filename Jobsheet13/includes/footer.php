@@ -1,44 +1,9 @@
-<?php
-// Menentukan folder utama Jobsheet 
-$base_path = '/Jobsheet13';
-?>
-
 </main>
+</div> <!-- .container -->
 
-<!-- =====================================================
-     FOOTER
-     ===================================================== -->
-<footer>
+<footer style="text-align: center; padding: 1.5rem; background-color: #e9ecef; margin-top: 2rem; border-top: 1px solid #dee2e6;">
     <p>&copy; <?= date('Y') ?> SIMPUS-Mini</p>
 </footer>
-
-<!-- =====================================================
-     JAVASCRIPT
-     ===================================================== -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const hamburgerBtn = document.getElementById('hamburger-btn');
-    const navMenu = document.getElementById('nav-menu');
-
-    if (hamburgerBtn && navMenu) {
-        hamburgerBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            navMenu.classList.toggle('active');
-        });
-
-        // Menutup menu saat mengklik area luar navbar
-        document.addEventListener('click', function(e) {
-            if (!hamburgerBtn.contains(e.target) && !navMenu.contains(e.target)) {
-                navMenu.classList.remove('active');
-            }
-        });
-    }
-});
-</script>
-
-<?php if (file_exists(__DIR__ . '/../assets/js/app.js')): ?>
-    <script src="<?= $base_path ?>/assets/js/app.js"></script>
-<?php endif; ?>
 
 </body>
 </html>
