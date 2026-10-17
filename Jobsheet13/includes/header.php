@@ -7,7 +7,6 @@ $isLoggedIn = isset($_SESSION['user']) || isset($_SESSION['user_id']);
 $username   = $_SESSION['user']['username'] ?? $_SESSION['username'] ?? 'User';
 $role       = $_SESSION['user']['role'] ?? $_SESSION['role'] ?? 'petugas';
 
-// Menentukan base path folder jobsheet secara otomatis
 $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
 $parts = explode('/', trim($scriptName, '/'));
 $basePath = '/' . ($parts[0] ?? '');
@@ -29,7 +28,6 @@ $basePath = '/' . ($parts[0] ?? '');
         .nav-links a:hover { opacity: 0.8; }
         .btn-auth { background-color: #ffffff; color: #1d5b8a !important; padding: 0.4rem 1rem; border-radius: 4px; font-weight: bold !important; text-decoration: none; }
         
-        /* Tombol Hamburger */
         .hamburger {
             display: none;
             flex-direction: column;
@@ -52,7 +50,6 @@ $basePath = '/' . ($parts[0] ?? '');
 
         .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
 
-        /* Responsive Style (Tampilan Mobile) */
         @media (max-width: 768px) {
             .navbar { padding: 0.8rem 1rem; }
             .hamburger { display: flex; }
@@ -68,7 +65,7 @@ $basePath = '/' . ($parts[0] ?? '');
                 gap: 1rem;
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             }
-            .nav-links.active { display: flex; }
+            .nav-links.active { display: flex !important; }
             .nav-links li { width: 100%; text-align: center; }
             .btn-auth { display: inline-block; margin-top: 0.5rem; }
         }
@@ -79,43 +76,36 @@ $basePath = '/' . ($parts[0] ?? '');
 <nav class="navbar">
     <a href="<?php echo $basePath; ?>/index.php" class="navbar-brand">SIMPUS-Mini</a>
     
-    <!-- Tombol Hamburger untuk Layar Kecil -->
-    <button class="hamburger" id="hamburger-btn" aria-label="Toggle Navigation">
+    <button type="button" class="hamburger" id="hamburger-btn" onclick="toggleMenu()" aria-label="Toggle Navigation">
         <span></span>
         <span></span>
         <span></span>
     </button>
 
     <ul class="nav-links" id="nav-menu">
-        <!-- Tampil untuk SEMUA Pengguna (Sebelum & Sesudah Login) -->
         <li><a href="<?php echo $basePath; ?>/index.php">Beranda</a></li>
         <li><a href="<?php echo $basePath; ?>/buku/list.php">Daftar Buku</a></li>
 
         <?php if ($isLoggedIn): ?>
-            <!-- Hanya tampil jika SUDAH LOGIN -->
             <li><a href="<?php echo $basePath; ?>/anggota/list.php">Daftar Anggota</a></li>
             <li><a href="<?php echo $basePath; ?>/peminjaman/tambah.php">Pinjam Buku</a></li>
             <li><a href="<?php echo $basePath; ?>/peminjaman/riwayat.php">Riwayat Peminjaman</a></li>
             <li style="font-size: 0.88rem; color: #fff;">Halo, <strong><?php echo htmlspecialchars($username); ?></strong> (<?php echo htmlspecialchars($role); ?>)</li>
             <li><a href="<?php echo $basePath; ?>/auth/logout.php" class="btn-auth">Logout</a></li>
         <?php else: ?>
-            <!-- Tampil jika BELUM LOGIN -->
             <li><a href="<?php echo $basePath; ?>/auth/login.php" class="btn-auth">Login</a></li>
         <?php endif; ?>
     </ul>
 </nav>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const hamburgerBtn = document.getElementById('hamburger-btn');
-    const navMenu = document.getElementById('nav-menu');
-
-    if (hamburgerBtn && navMenu) {
-        hamburgerBtn.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
-        });
+function toggleMenu() {
+    var menu = document.getElementById('nav-menu');
+    if (menu) {
+        menu.classList.toggle('active');
     }
-});
+}
 </script>
 
 <div class="container">
+<main>
