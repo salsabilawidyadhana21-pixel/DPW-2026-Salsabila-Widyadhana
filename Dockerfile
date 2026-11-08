@@ -9,3 +9,6 @@ COPY . /var/www/html/
 
 # Membuka akses port web
 EXPOSE 80
+
+# Menjalankan server Apache secara terus-menerus di foreground agar siap otomatis
+CMD ["apache2-foreground"]
